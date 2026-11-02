@@ -5,21 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Финансы</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
 <style>
   :root {
-    --bg: var(--tg-theme-bg-color, #ffffff);
-    --bg2: var(--tg-theme-secondary-bg-color, #f3f4f8);
-    --text: var(--tg-theme-text-color, #0f1222);
-    --hint: var(--tg-theme-hint-color, #8b90a0);
-    --accent: var(--tg-theme-button-color, #5b5bf6);
-    --accent-text: var(--tg-theme-button-text-color, #ffffff);
-    --danger: #ef4444;
-    --warn: #f59e0b;
-    --good: #16a34a;
-    --line: color-mix(in srgb, var(--hint) 18%, transparent);
-    --soft: color-mix(in srgb, var(--accent) 12%, var(--bg));
-    --r: 20px;
-    --shadow: 0 1px 2px rgba(15,18,34,.04), 0 6px 20px rgba(15,18,34,.06);
+    --bg: #14161e;          /* поверхность карточек */
+    --bg2: #0a0b10;         /* фон страницы */
+    --field: #1d2029;       /* поля, чипы, кнопки клавиатуры */
+    --text: #f4f5f8;
+    --hint: #8a8fa3;
+    --accent: #2ee6c5;
+    --accent-text: #03241e;
+    --danger: #ff6b6b;
+    --warn: #fbbf24;
+    --good: #4ade80;
+    --line: rgba(255,255,255,.07);
+    --soft: rgba(46,230,197,.12);
+    --r: 22px;
+    --shadow: none;
+    color-scheme: dark;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; background: var(--bg2); color: var(--text);
@@ -308,6 +311,88 @@
   .imp .amt.in { color: var(--good); }
   .tag { font-size: 11.5px; font-weight: 600; padding: 3px 7px; border-radius: 7px; background: color-mix(in srgb, var(--warn) 18%, transparent);
     color: color-mix(in srgb, var(--warn) 70%, var(--text)); }
+
+  /* ================= Тёмный премиум ================= */
+  html, body { background: var(--bg2); }
+  body { background: radial-gradient(520px 340px at 85% -120px, rgba(46,230,197,.13), transparent 70%),
+                     radial-gradient(420px 300px at -10% 30%, rgba(99,102,241,.07), transparent 70%), var(--bg2);
+         background-attachment: fixed; }
+  .box { border: 1px solid var(--line); }
+  .iconbtn { background: var(--bg); border: 1px solid var(--line); font-size: 20px; color: var(--text); }
+  .hello b { font-weight: 700; }
+  .hero { background: radial-gradient(140% 120% at 100% 0%, rgba(46,230,197,.22), transparent 55%),
+                      linear-gradient(180deg, #181b25, #12141b); border: 1px solid rgba(255,255,255,.09);
+          box-shadow: 0 20px 40px -20px rgba(46,230,197,.25); color: var(--text); }
+  .hero::after { background: rgba(46,230,197,.08); filter: blur(30px); width: 220px; height: 220px; right: -60px; bottom: -90px; }
+  .hero .lbl { color: var(--hint); opacity: 1; }
+  .hero .total { font-size: 40px; font-weight: 750; margin: 4px 0 6px; }
+  .hero .today { font-size: 13.5px; color: var(--accent); font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+  .hero .today.over { color: var(--danger); }
+  .pill { background: rgba(255,255,255,.04); border: 1px solid var(--line); backdrop-filter: none; }
+  .pill .pl { color: var(--hint); opacity: 1; }
+  .pill .pl i { font-size: 14px; }
+  .pill .pv { font-size: 16px; }
+  .hero .saved { color: var(--hint); opacity: 1; display: flex; align-items: center; gap: 6px; }
+  .qa { color: var(--hint); font-weight: 500; }
+  .qa span { background: var(--bg); border: 1px solid var(--line); color: var(--accent); font-size: 23px; border-radius: 18px; }
+  .card { background: radial-gradient(130% 130% at 100% 0%, color-mix(in srgb, var(--c) 55%, transparent), transparent 62%), #1a1d27;
+          border: 1px solid rgba(255,255,255,.08); box-shadow: none; }
+  .card::before { background: color-mix(in srgb, var(--c) 30%, transparent); filter: blur(24px); }
+  .card .cn { opacity: 1; }
+  .card .cc { opacity: .6; }
+  .card.add { background: transparent; border: 1.5px dashed rgba(255,255,255,.14); color: var(--accent); }
+  .ic { background: var(--field); color: var(--text); font-size: 21px; }
+  .ic i, .cat .ic i { line-height: 1; }
+  .op .t1, .due .t1, .brow .nm { font-weight: 550; }
+  .amt.in { color: var(--good); }
+  .chip { background: var(--field); }
+  .page .chip { background: var(--bg); border: 1px solid var(--line); box-shadow: none; }
+  .chip.on, .page .chip.on { background: var(--accent); color: var(--accent-text); border-color: transparent; }
+  .search { background: var(--bg); border: 1px solid var(--line); }
+  .search .muted { font-size: 18px; display: flex; }
+  .seg { background: var(--field); }
+  .seg button.on { background: #2a2e3b; color: var(--text); box-shadow: none; }
+  .monthbar button { background: var(--bg); border: 1px solid var(--line); color: var(--text); }
+  .track { background: rgba(255,255,255,.06); }
+  .menu .mi .ic { color: var(--accent); }
+  .switch { background: #2a2e3b; }
+  nav { background: rgba(20,22,30,.82); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+  nav button .ni { font-size: 23px; filter: none; opacity: .55; }
+  nav button.on { color: var(--accent); }
+  nav button.on .ni { opacity: 1; }
+  nav .plus span { background: var(--accent); color: var(--accent-text); box-shadow: 0 6px 22px rgba(46,230,197,.35); font-size: 26px; }
+  .backdrop { background: rgba(0,0,0,.6); }
+  .sheet { background: #14161e; border-top: 1px solid var(--line); }
+  .grab { background: rgba(255,255,255,.15); }
+  .inp, .field input[type=date] { background: var(--field); color-scheme: dark; }
+  .datebtn { background: var(--field); display: flex; align-items: center; gap: 6px; }
+  .keypad button { background: var(--field); }
+  .keypad button:active { background: #2a2e3b; }
+  .keypad .op { background: var(--soft); color: var(--accent); }
+  .btn { box-shadow: 0 8px 22px -10px rgba(46,230,197,.6); }
+  .btn.sec, .btn.del { box-shadow: none; background: var(--field); }
+  .btn.del { color: var(--danger); }
+  .small-btn { background: var(--soft); color: var(--accent); }
+  .toast { background: #22252f; border: 1px solid var(--line); }
+  .delta.up { background: rgba(255,107,107,.13); } .delta.down { background: rgba(74,222,128,.13); }
+  .chart .tip { background: #2a2e3b; color: var(--text); }
+  .lock { background: radial-gradient(500px 360px at 80% -60px, rgba(46,230,197,.20), transparent 70%), #0a0b10; }
+  .lock .logo { background: var(--soft); color: var(--accent); font-size: 34px; border: 1px solid rgba(46,230,197,.25); }
+  .lock .ls { color: var(--hint); opacity: 1; }
+  .dots i { border-color: rgba(255,255,255,.35); }
+  .dots i.on { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 12px rgba(46,230,197,.6); }
+  .pinpad button { background: rgba(255,255,255,.06); border: 1px solid var(--line); font-weight: 400; }
+  .pinpad button:active { background: rgba(46,230,197,.18); }
+  .pinpad button.ghost { border: 0; background: none; color: var(--hint); }
+  .lock .forgot { color: var(--hint); opacity: 1; }
+  .imp select, .imp input[type=date], .imp .amt { background: var(--field); color-scheme: dark; }
+  .imp.on .chk { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+  .pick { border-color: rgba(255,255,255,.14); }
+  .pick .big { font-size: 32px; }
+  .emojis button { background: var(--field); color: var(--text); font-size: 22px; }
+  .emojis button.on { background: var(--soft); color: var(--accent); outline-color: var(--accent); }
+  .cta .ic { color: var(--accent); }
+  .page { animation: fade .25s ease; }
 </style>
 </head>
 <body>
@@ -319,25 +404,26 @@
   <div class="top">
     <div class="hello" id="hello"></div>
     <div style="display:flex;gap:8px">
-      <button class="iconbtn" id="eye" aria-label="Скрыть балансы">👁</button>
-      <button class="iconbtn" id="cur-btn" aria-label="Валюта">💱</button>
+      <button class="iconbtn" id="eye" aria-label="Скрыть балансы"><i class="ti ti-eye"></i></button>
+      <button class="iconbtn" id="cur-btn" aria-label="Валюта"><i class="ti ti-arrows-exchange"></i></button>
     </div>
   </div>
   <div class="hero">
     <div class="lbl">Общий баланс</div>
     <div class="total num" id="total"></div>
+    <div class="today" id="h-today"></div>
     <div class="pills">
-      <div class="pill"><div class="pl">↓ Расходы, <span class="mname"></span></div><div class="pv num" id="m-out"></div></div>
-      <div class="pill"><div class="pl">↑ Доходы, <span class="mname"></span></div><div class="pv num" id="m-in"></div></div>
+      <div class="pill"><div class="pl"><i class="ti ti-arrow-up-right"></i> Расходы, <span class="mname"></span></div><div class="pv num" id="m-out"></div></div>
+      <div class="pill"><div class="pl"><i class="ti ti-arrow-down-left"></i> Доходы, <span class="mname"></span></div><div class="pv num" id="m-in"></div></div>
     </div>
     <div class="saved" id="h-saved"></div>
   </div>
   <div class="quick">
-    <button class="qa" data-quick="e"><span style="background:color-mix(in srgb,#ef4444 14%,var(--bg))">💸</span>Расход</button>
-    <button class="qa" data-quick="i"><span style="background:color-mix(in srgb,#22c55e 14%,var(--bg))">💰</span>Доход</button>
-    <button class="qa" data-quick="t"><span style="background:color-mix(in srgb,#3b82f6 14%,var(--bg))">🔁</span>Перевод</button>
-    <button class="qa" data-open="import"><span style="background:color-mix(in srgb,#8b5cf6 14%,var(--bg))">📷</span>Скрин</button>
-    <button class="qa" data-quick="g"><span style="background:color-mix(in srgb,#ec4899 14%,var(--bg))">🐷</span>Копилка</button>
+    <button class="qa" data-quick="e"><span><i class="ti ti-arrow-up-right"></i></span>Расход</button>
+    <button class="qa" data-quick="i"><span><i class="ti ti-arrow-down-left"></i></span>Доход</button>
+    <button class="qa" data-quick="t"><span><i class="ti ti-arrows-left-right"></i></span>Перевод</button>
+    <button class="qa" data-open="import"><span><i class="ti ti-scan"></i></span>Скрин</button>
+    <button class="qa" data-quick="g"><span><i class="ti ti-pig-money"></i></span>Копилка</button>
   </div>
   <div class="head"><h2>Мои карты</h2><button class="link" id="all-cards">Все</button></div>
   <div class="cards" id="cards"></div>
@@ -349,7 +435,7 @@
 
 <!-- ============ История ============ -->
 <section class="page" id="p-history">
-  <div class="search"><span>🔍</span><input id="q" placeholder="Поиск: категория, заметка, сумма" autocomplete="off"></div>
+  <div class="search"><span class="muted"><i class="ti ti-search"></i></span><input id="q" placeholder="Поиск: категория, заметка, сумма" autocomplete="off"></div>
   <div class="chips scroll" id="h-kind" style="margin-bottom:6px"></div>
   <div class="chips scroll" id="h-card"></div>
   <div id="history"></div>
@@ -381,18 +467,18 @@
 <section class="page" id="p-more">
   <div class="head" style="margin-top:6px"><h2>Планирование</h2></div>
   <div class="box menu" style="padding:4px 16px">
-    <button class="mi" data-open="budgets"><div class="ic">🎯</div><div class="mid"><div>Бюджеты</div><div class="t2">Лимиты трат на месяц</div></div><span class="ar">›</span></button>
-    <button class="mi" data-open="goals"><div class="ic">🐷</div><div class="mid"><div>Копилки</div><div class="t2">Цели и накопления</div></div><span class="ar">›</span></button>
-    <button class="mi" data-open="recur"><div class="ic">🗓</div><div class="mid"><div>Регулярные платежи</div><div class="t2">Подписки, аренда, кредиты</div></div><span class="ar">›</span></button>
+    <button class="mi" data-open="budgets"><div class="ic"><i class="ti ti-target-arrow"></i></div><div class="mid"><div>Бюджеты</div><div class="t2">Лимиты трат на месяц</div></div><span class="ar">›</span></button>
+    <button class="mi" data-open="goals"><div class="ic"><i class="ti ti-pig-money"></i></div><div class="mid"><div>Копилки</div><div class="t2">Цели и накопления</div></div><span class="ar">›</span></button>
+    <button class="mi" data-open="recur"><div class="ic"><i class="ti ti-calendar-repeat"></i></div><div class="mid"><div>Регулярные платежи</div><div class="t2">Подписки, аренда, кредиты</div></div><span class="ar">›</span></button>
   </div>
   <div class="head"><h2>Настройки</h2></div>
   <div class="box menu" style="padding:4px 16px">
-    <button class="mi" data-open="cards"><div class="ic">💳</div><div class="mid"><div>Карты и счета</div></div><span class="ar">›</span></button>
-    <button class="mi" data-open="currency"><div class="ic">💱</div><div class="mid"><div>Валюта и курсы</div><div class="t2" id="more-cur"></div></div><span class="ar">›</span></button>
-    <button class="mi" data-open="hide"><div class="ic">🙈</div><div class="mid"><div>Скрывать балансы</div><div class="t2">Когда рядом посторонние</div></div><span class="switch" id="hide-sw"></span></button>
-    <button class="mi" data-open="pin"><div class="ic">🔒</div><div class="mid"><div>Код-пароль</div><div class="t2" id="pin-state"></div></div><span class="ar">›</span></button>
-    <button class="mi" data-open="aiset"><div class="ic">🤖</div><div class="mid"><div>Распознавание скринов</div><div class="t2" id="ai-state"></div></div><span class="ar">›</span></button>
-    <button class="mi" data-open="cats"><div class="ic">🏷️</div><div class="mid"><div>Свои категории</div></div><span class="ar">›</span></button>
+    <button class="mi" data-open="cards"><div class="ic"><i class="ti ti-credit-card"></i></div><div class="mid"><div>Карты и счета</div></div><span class="ar">›</span></button>
+    <button class="mi" data-open="currency"><div class="ic"><i class="ti ti-arrows-exchange"></i></div><div class="mid"><div>Валюта и курсы</div><div class="t2" id="more-cur"></div></div><span class="ar">›</span></button>
+    <button class="mi" data-open="hide"><div class="ic"><i class="ti ti-eye-off"></i></div><div class="mid"><div>Скрывать балансы</div><div class="t2">Когда рядом посторонние</div></div><span class="switch" id="hide-sw"></span></button>
+    <button class="mi" data-open="pin"><div class="ic"><i class="ti ti-lock"></i></div><div class="mid"><div>Код-пароль</div><div class="t2" id="pin-state"></div></div><span class="ar">›</span></button>
+    <button class="mi" data-open="aiset"><div class="ic"><i class="ti ti-sparkles"></i></div><div class="mid"><div>Распознавание скринов</div><div class="t2" id="ai-state"></div></div><span class="ar">›</span></button>
+    <button class="mi" data-open="cats"><div class="ic"><i class="ti ti-tags"></i></div><div class="mid"><div>Свои категории</div></div><span class="ar">›</span></button>
   </div>
   <div class="muted" style="font-size:12.5px;text-align:center;padding:4px 20px 10px">
     Данные хранятся в облаке Telegram и привязаны к вашему аккаунту. Они доступны только вам.
@@ -400,22 +486,22 @@
 </section>
 
 <nav>
-  <button data-page="home" class="on"><span class="ni">🏠</span>Главная</button>
-  <button data-page="history"><span class="ni">🧾</span>История</button>
-  <button class="plus" id="btn-add" aria-label="Добавить операцию"><span>+</span></button>
-  <button data-page="stats"><span class="ni">📊</span>Аналитика</button>
-  <button data-page="more"><span class="ni">⚙️</span>Ещё</button>
+  <button data-page="home" class="on"><span class="ni"><i class="ti ti-home"></i></span>Главная</button>
+  <button data-page="history"><span class="ni"><i class="ti ti-receipt"></i></span>История</button>
+  <button class="plus" id="btn-add" aria-label="Добавить операцию"><span><i class="ti ti-plus"></i></span></button>
+  <button data-page="stats"><span class="ni"><i class="ti ti-chart-donut-3"></i></span>Аналитика</button>
+  <button data-page="more"><span class="ni"><i class="ti ti-dots-circle-horizontal"></i></span>Ещё</button>
 </nav>
 
 <div class="lock" id="lock">
-  <div class="logo" id="lock-logo">🔒</div>
+  <div class="logo" id="lock-logo"><i class="ti ti-lock"></i></div>
   <div class="lt" id="lock-title">Введите код-пароль</div>
   <div class="ls" id="lock-sub"></div>
   <div class="dots" id="lock-dots"><i></i><i></i><i></i><i></i></div>
   <div class="pinpad" id="pinpad">
     <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button>
     <button>7</button><button>8</button><button>9</button><button class="ghost" data-v="bio" id="bio-btn"></button>
-    <button>0</button><button class="ghost" data-v="del">⌫</button>
+    <button>0</button><button class="ghost" data-v="del"><i class="ti ti-backspace"></i></button>
   </div>
   <button class="forgot" id="lock-forgot">Забыли код?</button>
 </div>
@@ -459,20 +545,21 @@ const CURS = {
 };
 const sym = c => (CURS[c] || [c])[0];
 // [название, эмодзи, оттенок фона]
+const I = n => `<i class="ti ti-${n}"></i>`;
 const EXP_CATS = [
-  ['Продукты','🛒','#22c55e'],['Кафе','🍔','#f97316'],['Транспорт','🚕','#eab308'],['Авто','🚗','#64748b'],
-  ['Дом','🏠','#a855f7'],['Связь','📱','#06b6d4'],['Здоровье','💊','#ef4444'],['Красота','💅','#ec4899'],
-  ['Одежда','👕','#6366f1'],['Развлечения','🎉','#f43f5e'],['Путешествия','✈️','#0ea5e9'],['Образование','📚','#8b5cf6'],
-  ['Подарки','🎁','#d946ef'],['Подписки','🔁','#14b8a6'],['Дети','🧸','#f59e0b'],['Питомцы','🐾','#a16207'],['Другое','📦','#94a3b8'],
+  ['Продукты',I('shopping-cart'),'#22c55e'],['Кафе',I('tools-kitchen-2'),'#f97316'],['Транспорт',I('bus'),'#eab308'],['Авто',I('car'),'#64748b'],
+  ['Дом',I('home'),'#a855f7'],['Связь',I('device-mobile'),'#06b6d4'],['Здоровье',I('pill'),'#ef4444'],['Красота',I('sparkles'),'#ec4899'],
+  ['Одежда',I('shirt'),'#6366f1'],['Развлечения',I('confetti'),'#f43f5e'],['Путешествия',I('plane'),'#0ea5e9'],['Образование',I('school'),'#8b5cf6'],
+  ['Подарки',I('gift'),'#d946ef'],['Подписки',I('repeat'),'#14b8a6'],['Дети',I('baby-carriage'),'#f59e0b'],['Питомцы',I('paw'),'#a16207'],['Другое',I('dots'),'#94a3b8'],
 ];
-const INC_CATS = [['Зарплата','💼','#16a34a'],['Подработка','💸','#0ea5e9'],['Кэшбэк','🪙','#eab308'],
-  ['Подарок','🎁','#d946ef'],['Проценты','🏦','#6366f1'],['Другое','📦','#94a3b8']];
+const INC_CATS = [['Зарплата',I('briefcase'),'#16a34a'],['Подработка',I('cash'),'#0ea5e9'],['Кэшбэк',I('coin'),'#eab308'],
+  ['Подарок',I('gift'),'#d946ef'],['Проценты',I('building-bank'),'#6366f1'],['Другое',I('dots'),'#94a3b8']];
 const COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#3b82f6','#6366f1','#a855f7','#ec4899','#111827'];
 const GRADS = { // карта: цвет → градиент
   '#ef4444':'#f97316','#f97316':'#facc15','#eab308':'#f97316','#22c55e':'#14b8a6','#14b8a6':'#3b82f6',
   '#3b82f6':'#6366f1','#6366f1':'#a855f7','#a855f7':'#ec4899','#ec4899':'#f43f5e','#111827':'#475569',
 };
-const GOAL_EMO = ['🎯','✈️','🏠','🚗','📱','💻','🎓','💍','🏖️','🛡️','🎁','🐷'];
+const GOAL_EMO = ['target-arrow','plane','home','car','device-mobile','device-laptop','school','diamond','beach','shield-check','gift','pig-money'].map(I);
 
 /* ================================================================ Данные */
 let meta = { n: 0, next: 1, cats: [], icats: [], base: 'KZT', rates: {}, ratesAt: 0, hide: false };
@@ -583,6 +670,15 @@ function money(v, sign, cur = meta.base) {
   return (sign && v > 0 ? '+' : '') + fmtNum(v) + ' ' + sym(cur);
 }
 const cmoney = (v, cardId, sign) => money(v, sign, cardCur(cardId));
+function countTo(el, v, cur = meta.base) {
+  if (meta.hide) { el.textContent = hm(v, cur); el._v = null; return; }
+  const from = el._v == null ? 0 : el._v; el._v = v;
+  if (from === v || matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = money(v, false, cur); return; }
+  const t0 = performance.now(), d = 700;
+  const step = t => { const k = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = money(Math.round(from + (v - from) * e), false, cur); if (k < 1 && el._v === v) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
 const hm = (v, cur) => meta.hide ? '••••• ' + sym(cur || meta.base) : money(v, false, cur); // скрываемые балансы
 const toInput = v => (v / 100).toFixed(2).replace(/\.00$/, '').replace('.', ',');
 function parseMoney(s) {
@@ -593,9 +689,9 @@ function parseMoney(s) {
 function catInfo(name, kind) {
   const list = kind === 'i' ? INC_CATS : EXP_CATS;
   const f = list.find(c => c[0] === name);
-  return f ? { e: f[1], col: f[2] } : { e: '🏷️', col: '#94a3b8' };
+  return f ? { e: f[1], col: f[2] } : { e: I('tag'), col: '#94a3b8' };
 }
-const tint = col => `background:color-mix(in srgb, ${col} 16%, var(--bg))`;
+const tint = col => `background:color-mix(in srgb, ${col} 16%, #14161e);color:${col}`;
 const cardName = id => (cards.find(c => c.id === id) || { name: 'удалена' }).name;
 const goalById = id => goals.find(g => g.id === id);
 const ym = t => { const d = new Date(t * 1000); return d.getFullYear() * 12 + d.getMonth(); };
@@ -630,13 +726,13 @@ function opRow(o) {
     const ci = catInfo(o.c, o.k); ic = ci.e; col = ci.col; t1 = o.c; t2 = cardName(o.f);
     amt = cmoney(o.k === 'e' ? -o.a : o.a, o.f, true); if (o.k === 'i') cls = 'in';
   } else if (o.k === 't') {
-    ic = '🔁'; col = '#3b82f6'; t1 = 'Перевод'; t2 = cardName(o.f) + ' → ' + cardName(o.to); amt = cmoney(o.a, o.f);
+    ic = I('arrows-left-right'); col = '#3b82f6'; t1 = 'Перевод'; t2 = cardName(o.f) + ' → ' + cardName(o.to); amt = cmoney(o.a, o.f);
     if (o.a2 != null && cardCur(o.to) !== cardCur(o.f)) sub = cmoney(o.a2, o.to);
   } else if (o.k === 'g') {
-    const g = goalById(o.to); ic = g ? g.emoji : '🐷'; col = g ? g.color : '#ec4899';
+    const g = goalById(o.to); ic = g ? g.emoji : I('pig-money'); col = g ? g.color : '#ec4899';
     t1 = (o.a >= 0 ? 'В копилку ' : 'Из копилки ') + (g ? g.name : ''); t2 = cardName(o.f); amt = cmoney(-o.a, o.f, true);
     if (o.a < 0) cls = 'in';
-  } else { ic = '✏️'; t1 = 'Корректировка'; t2 = cardName(o.f); amt = cmoney(o.a, o.f, true); cls = o.a > 0 ? 'in' : ''; }
+  } else { ic = I('adjustments'); t1 = 'Корректировка'; t2 = cardName(o.f); amt = cmoney(o.a, o.f, true); cls = o.a > 0 ? 'in' : ''; }
   if (o.n) t2 = o.n + ' · ' + t2;
   return `<button class="op" data-op="${o.id}"><div class="ic" style="${tint(col)}">${ic}</div>
     <div class="mid"><div class="t1">${esc(t1)}</div><div class="t2">${esc(t2)}</div></div>
@@ -650,17 +746,29 @@ function renderHome() {
   const h = new Date().getHours();
   const greet = h < 5 ? 'Доброй ночи' : h < 12 ? 'Доброе утро' : h < 18 ? 'Добрый день' : 'Добрый вечер';
   $('#hello').innerHTML = `${greet}<b>${esc(u && u.first_name ? u.first_name : 'Мои финансы')}</b>`;
-  $('#eye').textContent = meta.hide ? '🙈' : '👁';
-  $('#total').textContent = hm(cards.reduce((s, c) => s + conv(balance(c.id), c.cur), 0));
+  $('#eye').innerHTML = I(meta.hide ? 'eye-off' : 'eye');
+  countTo($('#total'), cards.reduce((s, c) => s + conv(balance(c.id), c.cur), 0));
   const m = nowYm();
+  {
+    const now = new Date(), dim = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const spentToday = ops.reduce((s, o) => o.k === 'e' && dayDiff(isoDay(o.t * 1000)) === 0 ? s + opBase(o) : s, 0);
+    const el = $('#h-today'); el.classList.remove('over');
+    if (budgets['*']) {
+      const spentBefore = monthSum(m, 'e') - spentToday;
+      const perDay = Math.floor((budgets['*'] - spentBefore) / (dim - now.getDate() + 1) / 100) * 100;
+      const left = perDay - spentToday;
+      if (left >= 0) el.innerHTML = `${I('circle-check')} Можно потратить сегодня: ${money(left)}`;
+      else { el.classList.add('over'); el.innerHTML = `${I('alert-triangle')} Сегодня сверх нормы на ${money(-left)}`; }
+    } else el.innerHTML = spentToday ? `${I('calendar-event')} Сегодня потрачено ${money(spentToday)}` : `${I('sparkles')} Сегодня без трат`;
+  }
   $$('.mname').forEach(e => e.textContent = MONTHS[m % 12].toLowerCase());
   $('#m-out').textContent = money(monthSum(m, 'e')); $('#m-in').textContent = money(monthSum(m, 'i'));
   const inGoals = goals.reduce((s, g) => s + conv(goalSaved(g), g.cur), 0);
-  $('#h-saved').textContent = goals.length ? `🐷 В копилках: ${hm(inGoals)}` : '';
+  $('#h-saved').innerHTML = goals.length ? `${I('pig-money')} В копилках: ${hm(inGoals)}` : '';
   $('#h-saved').style.display = goals.length ? '' : 'none';
 
   $('#cards').innerHTML = cards.map(c =>
-    `<button class="card" data-card="${c.id}" style="background:linear-gradient(135deg, ${c.color}, ${GRADS[c.color] || c.color})">
+    `<button class="card" data-card="${c.id}" style="--c:${c.color}">
       <div class="ct"><span class="cn">${esc(c.name)}</span><span class="cc">${c.cur}</span></div>
       <div class="cb num">${hm(balance(c.id), c.cur)}</div></button>`).join('')
     + `<button class="card add" data-new-card>＋ Карта</button>`;
@@ -671,7 +779,7 @@ function renderHome() {
   const bkeys = Object.keys(budgets);
   if (!bkeys.length) {
     $('#h-budget').innerHTML = cards.length ? `<div class="box" style="margin-top:6px"><button class="cta" data-open="budgets">
-      <div class="ic">🎯</div><div style="flex:1"><div style="font-weight:600">Задайте бюджет на месяц</div>
+      <div class="ic"><i class="ti ti-target-arrow"></i></div><div style="flex:1"><div style="font-weight:600">Задайте бюджет на месяц</div>
       <div class="muted" style="font-size:12.5px">Приложение подскажет, когда траты подходят к лимиту</div></div>
       <span class="go">Задать</span></button></div>` : '';
   } else {
@@ -688,16 +796,16 @@ function renderHome() {
 
   const recent = ops.slice(-6).reverse();
   $('#recent').innerHTML = recent.length ? recent.map(opRow).join('')
-    : `<div class="empty">${cards.length ? 'Здесь появятся ваши траты.<br>Нажмите «+», чтобы добавить первую.' : 'Начните с добавления карты 👆'}</div>`;
+    : `<div class="empty">${cards.length ? 'Здесь появятся ваши траты.<br>Нажмите «+», чтобы добавить первую.' : 'Начните с добавления карты'}</div>`;
 }
 
 function budgetRow(b) {
   const pct = b.lim ? b.sp / b.lim : 0;
-  const ci = b.k === '*' ? { e: '💰', col: '#6366f1' } : catInfo(b.k, 'e');
+  const ci = b.k === '*' ? { e: I('wallet'), col: '#6366f1' } : catInfo(b.k, 'e');
   const cls = pct >= 1 ? 'over' : pct >= .8 ? 'warn' : '';
   const day = new Date(), dim = new Date(day.getFullYear(), day.getMonth() + 1, 0).getDate();
-  const left = b.lim - b.sp, perDay = left > 0 ? Math.floor(left / (dim - day.getDate() + 1)) : 0;
-  const note = pct >= 1 ? `<span class="note-over">⚠️ Превышен на ${money(-left)}</span>`
+  const left = b.lim - b.sp, perDay = left > 0 ? Math.floor(left / (dim - day.getDate() + 1) / 100) * 100 : 0;
+  const note = pct >= 1 ? `<span class="note-over"><i class="ti ti-alert-triangle"></i> Превышен на ${money(-left)}</span>`
     : `Осталось ${money(left)}${b.k === '*' && perDay ? ` · ~${money(perDay)} в день` : ''}`;
   return `<div class="brow"><div class="r1"><div class="ic" style="${tint(ci.col)}">${ci.e}</div>
     <div class="nm">${b.k === '*' ? 'Все расходы' : esc(b.k)}</div>
@@ -817,7 +925,7 @@ function renderStats() {
   const cl = Object.entries(byCard).sort((a, b) => b[1] - a[1]);
   $('#s-cards').innerHTML = cl.length ? cl.map(([id, v]) => {
     const c = cards.find(x => x.id === +id) || { color: '#94a3b8', name: 'удалена' };
-    return `<div class="brow"><div class="r1"><div class="ic" style="background:${c.color};color:#fff">💳</div>
+    return `<div class="brow"><div class="r1"><div class="ic" style="${tint(c.color)}">${I('credit-card')}</div>
       <div class="nm">${esc(c.name)}</div><div class="vl num">${money(v)}<small>${Math.round(v * 100 / total)}%</small></div></div>
       <div class="track"><div class="fill" style="width:${v * 100 / cl[0][1]}%;background:${c.color}"></div></div></div>`;
   }).join('') : '<div class="empty">Нет данных</div>';
@@ -890,7 +998,7 @@ function openAdd(kind = 'e', edit = null, preset = {}) {
 
   const cats = () => {
     const base = st.k === 'i' ? INC_CATS : EXP_CATS;
-    const extra = (st.k === 'i' ? meta.icats : meta.cats).map(c => [c, '🏷️', '#94a3b8']);
+    const extra = (st.k === 'i' ? meta.icats : meta.cats).map(c => [c, I('tag'), '#94a3b8']);
     return [...base.slice(0, -1), ...extra, base[base.length - 1]];
   };
   openSheet(`
@@ -909,7 +1017,7 @@ function openAdd(kind = 'e', edit = null, preset = {}) {
     <div id="a-a2-w" class="row2"><span class="muted" style="font-size:13px;white-space:nowrap" id="a-a2-l"></span>
       <input class="inp" id="a-a2" inputmode="decimal" placeholder="0"></div>
     <div class="row2">
-      <label class="datebtn">📅 <span id="a-date-l"></span><input type="date" id="a-date"></label>
+      <label class="datebtn"><i class="ti ti-calendar"></i> <span id="a-date-l"></span><input type="date" id="a-date"></label>
       <input class="inp" id="a-note" maxlength="60" placeholder="Заметка">
     </div>
     <div class="err" id="a-err"></div>
@@ -917,10 +1025,10 @@ function openAdd(kind = 'e', edit = null, preset = {}) {
       <button>7</button><button>8</button><button>9</button><button class="op" data-v="÷">÷</button>
       <button>4</button><button>5</button><button>6</button><button class="op" data-v="×">×</button>
       <button>1</button><button>2</button><button>3</button><button class="op" data-v="-">−</button>
-      <button data-v=".">,</button><button>0</button><button data-v="del">⌫</button><button class="op" data-v="+">+</button>
+      <button data-v=".">,</button><button>0</button><button data-v="del"><i class="ti ti-backspace"></i></button><button class="op" data-v="+">+</button>
     </div>
     <div class="btnrow" style="margin-top:10px">
-      ${edit ? '<button class="btn del" id="a-del" style="flex:0 0 56px">🗑</button>' : ''}
+      ${edit ? '<button class="btn del" id="a-del" style="flex:0 0 56px"><i class="ti ti-trash"></i></button>' : ''}
       <button class="btn" id="a-save">${edit ? 'Сохранить' : 'Добавить'}</button>
     </div>`, sh => {
     const amount = () => evalExpr(st.expr);
@@ -1040,7 +1148,7 @@ function budgetAlert(cat) {
   const m = nowYm();
   const check = (k, lim) => {
     const sp = ops.reduce((s, o) => o.k === 'e' && ym(o.t) === m && (k === '*' || o.c === k) ? s + opBase(o) : s, 0);
-    if (sp >= lim) return `⚠️ Бюджет «${k === '*' ? 'Все расходы' : k}» превышен`;
+    if (sp >= lim) return `Бюджет «${k === '*' ? 'Все расходы' : k}» превышен`;
     if (sp >= lim * .8) return `Бюджет «${k === '*' ? 'Все расходы' : k}»: потрачено ${Math.round(sp * 100 / lim)}%`;
   };
   const msg = (budgets[cat] && check(cat, budgets[cat])) || (budgets['*'] && check('*', budgets['*']));
@@ -1065,7 +1173,7 @@ function openCard(id, back) {
     ${c ? '<button class="btn del" id="c-del" style="margin-top:8px">Удалить карту</button>' : ''}`, () => {
     const prev = () => {
       const p = $('#c-prev');
-      p.style.background = `linear-gradient(135deg, ${color}, ${GRADS[color] || color})`;
+      p.style.setProperty('--c', color);
       const raw = $('#c-bal').value.trim(), v = parseMoney(raw.replace(/^[-−]/, ''));
       p.innerHTML = `<div class="ct"><span class="cn">${esc($('#c-name').value || 'Название карты')}</span><span class="cc">${ccur}</span></div>
         <div class="cb num">${money((v || 0) * (/^[-−]/.test(raw) ? -1 : 1), false, ccur)}</div>`;
@@ -1111,7 +1219,7 @@ function openCardsList() {
   openSheet(`<h2>Карты и счета</h2><div id="cl"></div>
     <button class="btn" id="cl-add" style="margin-top:14px">＋ Добавить карту</button>`, () => {
     $('#cl').innerHTML = cards.length ? cards.map(c => `<button class="op" data-cl="${c.id}">
-      <div class="ic" style="background:linear-gradient(135deg, ${c.color}, ${GRADS[c.color] || c.color});color:#fff">💳</div>
+      <div class="ic" style="${tint(c.color)}">${I('credit-card')}</div>
       <div class="mid"><div class="t1">${esc(c.name)}</div><div class="t2">${CURS[c.cur][1]}</div></div>
       <div class="amt num">${hm(balance(c.id), c.cur)}</div></button>`).join('') : '<div class="empty">Карт пока нет</div>';
     $('#cl').onclick = e => { const b = e.target.closest('[data-cl]'); if (b) openCard(+b.dataset.cl, openCardsList); };
@@ -1150,7 +1258,7 @@ function openCurrency() {
       <div id="cu-rates"></div></div>
     <div class="err" id="cu-err"></div>
     <button class="btn" id="cu-save">Сохранить</button>
-    <button class="btn sec" id="cu-upd" style="margin-top:8px">🔄 Обновить курсы</button>`, () => {
+    <button class="btn sec" id="cu-upd" style="margin-top:8px"><i class="ti ti-refresh"></i> Обновить курсы</button>`, () => {
     const draw = () => {
       $('#cu-base').innerHTML = Object.keys(CURS).map(k =>
         `<button class="chip ${k === base ? 'on' : ''}" data-cur="${k}">${sym(k)} ${CURS[k][1]}</button>`).join('');
@@ -1199,7 +1307,7 @@ function openBudgets() {
 function openBudget(key) {
   let cat = key || (budgets['*'] ? null : '*');
   const avg3 = k => { const m = nowYm(); let s = 0; for (let i = 1; i <= 3; i++) s += ops.reduce((x, o) => o.k === 'e' && ym(o.t) === m - i && (k === '*' || o.c === k) ? x + opBase(o) : x, 0); return Math.round(s / 3); };
-  const opts = [['*', '💰', '#6366f1', 'Все расходы'], ...EXP_CATS.map(c => [c[0], c[1], c[2], c[0]]), ...meta.cats.map(c => [c, '🏷️', '#94a3b8', c])];
+  const opts = [['*', I('wallet'), '#6366f1', 'Все расходы'], ...EXP_CATS.map(c => [c[0], c[1], c[2], c[0]]), ...meta.cats.map(c => [c, I('tag'), '#94a3b8', c])];
   openSheet(`<h2>${key ? 'Лимит' : 'Новый лимит'}</h2>
     <div class="field"><label>Категория</label><div class="cats" id="bd-cats" style="margin-bottom:0"></div></div>
     <div class="field"><label>Лимит на месяц, ${sym(meta.base)}</label><input class="inp" id="bd-lim" inputmode="decimal" placeholder="0" value="${key ? toInput(budgets[key]) : ''}"></div>
@@ -1237,7 +1345,7 @@ function openGoals() {
         ${g.target ? `<div class="track" style="margin-bottom:10px"><div class="fill" style="width:${p}%;background:${g.color}"></div></div>` : ''}
         <div class="btnrow"><button class="small-btn" style="flex:1" data-gin="${g.id}">＋ Положить</button>
           <button class="small-btn" style="flex:1;background:var(--bg2);color:var(--text)" data-gout="${g.id}">Снять</button>
-          <button class="small-btn" style="background:var(--bg2);color:var(--text)" data-gedit="${g.id}">✎</button></div></div>`;
+          <button class="small-btn" style="background:var(--bg2);color:var(--text)" data-gedit="${g.id}">${I('pencil')}</button></div></div>`;
     }).join('') : '<div class="empty">Копите на отпуск, технику или подушку безопасности.<br>Деньги переводятся с карты в копилку.</div>'}</div>
     <button class="btn" id="g-add" style="margin-top:12px">＋ Новая копилка</button>`, () => {
     $('#gl').onclick = e => {
@@ -1251,7 +1359,7 @@ function openGoals() {
 }
 function openGoal(id, back) {
   const g = goalById(id);
-  let emoji = g ? g.emoji : '🎯', color = g ? g.color : COLORS[(goals.length * 3 + 8) % COLORS.length], gcur = g ? g.cur : meta.base;
+  let emoji = g ? g.emoji : GOAL_EMO[0], color = g ? g.color : COLORS[(goals.length * 3 + 8) % COLORS.length], gcur = g ? g.cur : meta.base;
   openSheet(`<h2>${g ? 'Копилка' : 'Новая копилка'}</h2>
     <div class="field"><label>Название</label><input class="inp" id="g-name" maxlength="24" placeholder="Отпуск" value="${g ? esc(g.name) : ''}"></div>
     <div class="field"><label>Цель, ${sym(gcur)} (необязательно)</label><input class="inp" id="g-target" inputmode="decimal" placeholder="0" value="${g && g.target ? toInput(g.target) : ''}"></div>
@@ -1262,11 +1370,11 @@ function openGoal(id, back) {
     <button class="btn" id="g-save">Сохранить</button>
     ${g ? '<button class="btn del" id="g-del" style="margin-top:8px">Удалить копилку</button>' : ''}`, () => {
     const draw = () => {
-      $('#g-emo').innerHTML = GOAL_EMO.map(x => `<button class="${x === emoji ? 'on' : ''}" data-e="${x}">${x}</button>`).join('');
+      $('#g-emo').innerHTML = GOAL_EMO.map((x, i) => `<button class="${x === emoji ? 'on' : ''}" data-e="${i}">${x}</button>`).join('');
       $('#g-col').innerHTML = COLORS.map(x => `<button style="background:${x}" class="${x === color ? 'on' : ''}" data-c="${x}"></button>`).join('');
     };
     draw();
-    $('#g-emo').onclick = e => { if (e.target.dataset.e) { emoji = e.target.dataset.e; draw(); } };
+    $('#g-emo').onclick = e => { const b = e.target.closest('[data-e]'); if (b) { emoji = GOAL_EMO[+b.dataset.e]; draw(); } };
     $('#g-col').onclick = e => { if (e.target.dataset.c) { color = e.target.dataset.c; draw(); } };
     $('#g-save').onclick = async () => {
       const name = $('#g-name').value.trim();
@@ -1326,7 +1434,7 @@ function openRecur(id) {
     <button class="btn" id="r-save">Сохранить</button>
     ${r ? '<button class="btn del" id="r-del" style="margin-top:8px">Удалить</button>' : ''}`, () => {
     const draw = () => {
-      $('#r-cats').innerHTML = [...EXP_CATS, ...meta.cats.map(c => [c, '🏷️', '#94a3b8'])].map(([n, e, col]) =>
+      $('#r-cats').innerHTML = [...EXP_CATS, ...meta.cats.map(c => [c, I('tag'), '#94a3b8'])].map(([n, e, col]) =>
         `<button class="cat ${st.c === n ? 'on' : ''}" data-cat="${esc(n)}"><span class="ic" style="${tint(col)}">${e}</span><span>${esc(n)}</span></button>`).join('');
       $('#r-card').innerHTML = cards.map(c => `<button class="chip ${st.f === c.id ? 'on' : ''}" data-id="${c.id}">${esc(c.name)}</button>`).join('');
       $$('#r-per button').forEach(b => b.classList.toggle('on', b.dataset.p === st.per));
@@ -1356,7 +1464,7 @@ function payRecur(id) {
 function openCats() {
   const all = [...meta.cats.map(c => ['e', c]), ...meta.icats.map(c => ['i', c])];
   openSheet(`<h2>Свои категории</h2>
-    <div id="kl">${all.length ? all.map(([k, c]) => `<div class="op"><div class="ic">🏷️</div>
+    <div id="kl">${all.length ? all.map(([k, c]) => `<div class="op"><div class="ic">${I('tag')}</div>
       <div class="mid"><div class="t1">${esc(c)}</div><div class="t2">${k === 'e' ? 'Расходы' : 'Доходы'}</div></div>
       <button class="small-btn" style="background:var(--bg2);color:var(--danger)" data-k="${k}" data-c="${esc(c)}">Удалить</button></div>`).join('')
       : '<div class="empty">Свои категории добавляются кнопкой «＋ Своя» при записи операции.</div>'}</div>`, () => {
@@ -1377,7 +1485,7 @@ function initBio() {
     try { b.init(() => { bioReady = b.isInited && b.isBiometricAvailable; res(bioReady); }); } catch (e) { res(false); } });
 }
 const bioName = () => { const t = bm() && bm().biometricType; return t === 'face' ? 'Face ID' : t === 'finger' ? 'отпечаток' : 'биометрия'; };
-const bioIcon = () => (bm() && bm().biometricType === 'face') ? '🙂' : '👆';
+const bioIcon = () => (bm() && bm().biometricType === 'face') ? I('face-id') : I('fingerprint');
 function bioAuth() {
   return new Promise(res => { const b = bm(); if (!b || !bioReady) return res(false);
     const go = () => b.authenticate({ reason: 'Вход в Финансы' }, ok => res(!!ok));
@@ -1398,11 +1506,11 @@ const newSalt = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), b =
 
 // Универсальный ввод 4 цифр на экране блокировки
 let pinCb = null, pinBuf = '';
-function showPad({ title, sub = '', icon = '🔒', bio = false, forgot = false, cancel = null }, cb) {
+function showPad({ title, sub = '', icon = I('lock'), bio = false, forgot = false, cancel = null }, cb) {
   pinBuf = ''; pinCb = cb;
-  $('#lock-title').textContent = title; $('#lock-sub').textContent = sub; $('#lock-logo').textContent = icon;
+  $('#lock-title').textContent = title; $('#lock-sub').textContent = sub; $('#lock-logo').innerHTML = icon;
   const bb = $('#bio-btn');
-  bb.textContent = cancel ? '✕' : bio ? bioIcon() : ''; bb.disabled = !(cancel || bio);
+  bb.innerHTML = cancel ? I('x') : bio ? bioIcon() : ''; bb.disabled = !(cancel || bio);
   bb.dataset.v = cancel ? 'cancel' : 'bio'; showPad.cancel = cancel;
   $('#lock-forgot').style.display = forgot ? '' : 'none';
   drawDots(); $('#lock').classList.add('show'); document.body.classList.add('locked');
@@ -1466,8 +1574,8 @@ try { tg.onEvent('deactivated', onHide); tg.onEvent('activated', onShow); } catc
 function setupPin(done, required) {
   const cancel = required ? null : () => done && done(false);
   showPad({ title: required ? 'Защитите свои финансы' : 'Придумайте код-пароль',
-            sub: required ? 'Придумайте код из 4 цифр — он понадобится при каждом входе' : '4 цифры', icon: '🔐', cancel }, first => {
-    showPad({ title: 'Повторите код', sub: 'Чтобы не ошибиться', icon: '🔐', cancel }, async second => {
+            sub: required ? 'Придумайте код из 4 цифр — он понадобится при каждом входе' : '4 цифры', icon: I('lock-password'), cancel }, first => {
+    showPad({ title: 'Повторите код', sub: 'Чтобы не ошибиться', icon: I('lock-password'), cancel }, async second => {
       if (first !== second) { hidePad(); toast('Коды не совпали, попробуйте ещё раз'); return setupPin(done, required); }
       const salt = newSalt();
       meta.pin = { salt, hash: await hashPin(first, salt) };
@@ -1490,7 +1598,7 @@ function openPinSettings() {
   openSheet(`<h2>Код-пароль</h2>
     <div class="box menu" style="background:var(--bg2);box-shadow:none;padding:4px 16px">
       ${bioReady ? `<button class="mi" id="ps-bio"><div class="ic" style="background:var(--bg)">${bioIcon()}</div><div class="mid"><div>Вход по ${bioName() === 'Face ID' ? 'Face ID' : bioName() === 'отпечаток' ? 'отпечатку' : 'биометрии'}</div></div><span class="switch ${meta.bio ? 'on' : ''}"></span></button>` : ''}
-      <button class="mi" id="ps-change"><div class="ic" style="background:var(--bg)">🔑</div><div class="mid"><div>Сменить код</div></div><span class="ar">›</span></button>
+      <button class="mi" id="ps-change"><div class="ic" style="background:var(--bg)">${I('key')}</div><div class="mid"><div>Сменить код</div></div><span class="ar">›</span></button>
     </div>
     <div class="muted" style="font-size:13px;margin:-4px 4px 4px">Приложение блокируется при каждом открытии и если было свёрнуто дольше минуты.</div>`, () => {
     if (bioReady) $('#ps-bio').onclick = async () => {
@@ -1554,11 +1662,11 @@ function openImport() {
   if (!meta.ai) return openAiSettings(openImport);
   const lastImp = [...ops].reverse().find(o => o.k === 'e' || o.k === 'i');
   let card = lastImp && cards.some(c => c.id === lastImp.f) ? lastImp.f : cards[0].id, files = [];
-  openSheet(`<h2>📷 Скрины из банка</h2>
+  openSheet(`<h2>Скрины из банка</h2>
     <div class="muted" style="font-size:13.5px;margin:-6px 0 14px">ИИ найдёт на скриншотах операции и разложит их по категориям. Вы всё проверите перед сохранением.</div>
     <div class="muted" style="font-size:12.5px;margin:0 2px 6px">С какой карты эти операции</div>
     <div class="chips scroll" id="im-card" style="margin-bottom:14px"></div>
-    <label class="pick" id="im-pick"><span class="big">🖼</span><span>Выбрать скриншоты</span>
+    <label class="pick" id="im-pick"><span class="big"><i class="ti ti-photo-scan"></i></span><span>Выбрать скриншоты</span>
       <span class="muted" style="font-size:12px;font-weight:400">можно несколько, до 10 штук</span>
       <input type="file" id="im-files" accept="image/*" multiple></label>
     <div class="shots" id="im-shots"></div>
@@ -1633,7 +1741,7 @@ function openReview(list, card) {
     $('#rv-list').innerHTML = items.map((x, i) => {
       const ci = catInfo(x.c, x.k);
       return `<div class="imp ${x.on ? 'on' : 'off'}" data-i="${i}">
-        <button class="chk" data-act="toggle">${x.on ? '✓' : ''}</button>
+        <button class="chk" data-act="toggle">${x.on ? I('check') : ''}</button>
         <div class="ic" style="${tint(ci.col)}">${ci.e}</div>
         <div class="mid"><div class="t1">${esc(x.note || x.c)}</div>
           <div class="meta">
@@ -1717,7 +1825,7 @@ if (tg && tg.BackButton) tg.BackButton.onClick(closeSheet);
 (async () => {
   if (tg) {
     tg.ready(); tg.expand();
-    try { tg.setHeaderColor('secondary_bg_color'); tg.setBackgroundColor('secondary_bg_color'); } catch (e) {}
+    try { tg.setHeaderColor('#0a0b10'); tg.setBackgroundColor('#0a0b10'); if (tg.setBottomBarColor) tg.setBottomBarColor('#0a0b10'); } catch (e) {}
     try { if (tg.isVersionAtLeast('7.7')) tg.disableVerticalSwipes(); } catch (e) {}
   }
   try { await load(); } catch (e) { $('#loading').textContent = 'Не удалось загрузить данные: ' + e; return; }
