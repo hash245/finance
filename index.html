@@ -244,6 +244,30 @@
     transition: .22s; z-index: 30; pointer-events: none; white-space: nowrap; max-width: 92vw; overflow: hidden; text-overflow: ellipsis; }
   .toast.show { opacity: 1; transform: translateX(-50%); }
   .loading { text-align: center; color: var(--hint); padding: 80px 0; }
+
+  /* Экран блокировки */
+  body.locked { overflow: hidden; }
+  body.locked .page, body.locked nav { visibility: hidden; }
+  .lock { position: fixed; inset: 0; z-index: 50; display: none; flex-direction: column; align-items: center;
+    justify-content: center; padding: 24px 24px calc(24px + env(safe-area-inset-bottom)); color: #fff;
+    background: radial-gradient(120% 80% at 100% 0%, #9333ea 0%, transparent 60%), linear-gradient(160deg, #312e81, #4c1d95 60%, #581c87); }
+  .lock.show { display: flex; }
+  .lock .logo { width: 72px; height: 72px; border-radius: 24px; background: rgba(255,255,255,.15); display: grid;
+    place-items: center; font-size: 36px; margin-bottom: 18px; }
+  .lock .lt { font-size: 20px; font-weight: 700; margin-bottom: 6px; text-align: center; }
+  .lock .ls { font-size: 14px; opacity: .75; min-height: 20px; text-align: center; }
+  .dots { display: flex; gap: 18px; margin: 26px 0 34px; }
+  .dots i { width: 15px; height: 15px; border-radius: 50%; border: 2px solid rgba(255,255,255,.7); transition: .15s; }
+  .dots i.on { background: #fff; border-color: #fff; transform: scale(1.1); }
+  .dots.shake { animation: shake .4s; }
+  @keyframes shake { 20%,60% { transform: translateX(-10px); } 40%,80% { transform: translateX(10px); } }
+  .pinpad { display: grid; grid-template-columns: repeat(3, 76px); gap: 16px 26px; }
+  .pinpad button { width: 76px; height: 76px; border-radius: 50%; background: rgba(255,255,255,.13); color: #fff;
+    font-size: 30px; font-weight: 500; }
+  .pinpad button:active { background: rgba(255,255,255,.3); }
+  .pinpad button.ghost { background: none; font-size: 26px; }
+  .pinpad button:disabled { opacity: .3; }
+  .lock .forgot { margin-top: 26px; color: #fff; opacity: .7; font-size: 14px; }
   .detail { text-align: center; margin-bottom: 16px; }
   .detail .ic { width: 60px; height: 60px; border-radius: 20px; font-size: 30px; margin: 0 auto 8px; }
   .detail .dv { font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
@@ -338,6 +362,7 @@
     <button class="mi" data-open="cards"><div class="ic">💳</div><div class="mid"><div>Карты и счета</div></div><span class="ar">›</span></button>
     <button class="mi" data-open="currency"><div class="ic">💱</div><div class="mid"><div>Валюта и курсы</div><div class="t2" id="more-cur"></div></div><span class="ar">›</span></button>
     <button class="mi" data-open="hide"><div class="ic">🙈</div><div class="mid"><div>Скрывать балансы</div><div class="t2">Когда рядом посторонние</div></div><span class="switch" id="hide-sw"></span></button>
+    <button class="mi" data-open="pin"><div class="ic">🔒</div><div class="mid"><div>Код-пароль</div><div class="t2" id="pin-state"></div></div><span class="ar">›</span></button>
     <button class="mi" data-open="cats"><div class="ic">🏷️</div><div class="mid"><div>Свои категории</div></div><span class="ar">›</span></button>
   </div>
   <div class="muted" style="font-size:12.5px;text-align:center;padding:4px 20px 10px">
@@ -352,6 +377,19 @@
   <button data-page="stats"><span class="ni">📊</span>Аналитика</button>
   <button data-page="more"><span class="ni">⚙️</span>Ещё</button>
 </nav>
+
+<div class="lock" id="lock">
+  <div class="logo" id="lock-logo">🔒</div>
+  <div class="lt" id="lock-title">Введите код-пароль</div>
+  <div class="ls" id="lock-sub"></div>
+  <div class="dots" id="lock-dots"><i></i><i></i><i></i><i></i></div>
+  <div class="pinpad" id="pinpad">
+    <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button>
+    <button>7</button><button>8</button><button>9</button><button class="ghost" data-v="bio" id="bio-btn"></button>
+    <button>0</button><button class="ghost" data-v="del">⌫</button>
+  </div>
+  <button class="forgot" id="lock-forgot">Забыли код?</button>
+</div>
 
 <div class="backdrop" id="backdrop"></div>
 <div class="sheet" id="sheet"></div>
@@ -758,6 +796,7 @@ function renderStats() {
 
 /* ================================================================ Ещё */
 function renderMore() {
+  $('#pin-state').textContent = meta.pin ? 'Включён' + (meta.bio ? ' · ' + bioName() : '') : 'Выключен';
   $('#more-cur').textContent = 'Основная: ' + sym(meta.base) + ' ' + CURS[meta.base][1];
   $('#hide-sw').classList.toggle('on', !!meta.hide);
 }
@@ -1300,8 +1339,142 @@ function openCats() {
   });
 }
 
+/* ================================================================ Код-пароль */
+const bm = () => tg && tg.isVersionAtLeast && tg.isVersionAtLeast('7.2') && tg.BiometricManager;
+let bioReady = false;
+function initBio() {
+  return new Promise(res => { const b = bm(); if (!b) return res(false);
+    try { b.init(() => { bioReady = b.isInited && b.isBiometricAvailable; res(bioReady); }); } catch (e) { res(false); } });
+}
+const bioName = () => { const t = bm() && bm().biometricType; return t === 'face' ? 'Face ID' : t === 'finger' ? 'отпечаток' : 'биометрия'; };
+const bioIcon = () => (bm() && bm().biometricType === 'face') ? '🙂' : '👆';
+function bioAuth() {
+  return new Promise(res => { const b = bm(); if (!b || !bioReady) return res(false);
+    const go = () => b.authenticate({ reason: 'Вход в Финансы' }, ok => res(!!ok));
+    if (b.isAccessGranted) go();
+    else b.requestAccess({ reason: 'Чтобы входить в Финансы без кода' }, ok => ok ? go() : res(false));
+  });
+}
+async function hashPin(pin, salt) {
+  const data = new TextEncoder().encode(salt + ':' + pin);
+  if (crypto.subtle) {
+    let buf = data;
+    for (let i = 0; i < 2000; i++) buf = new Uint8Array(await crypto.subtle.digest('SHA-256', buf));
+    return Array.from(buf, b => b.toString(16).padStart(2, '0')).join('');
+  }
+  let h = 0; for (const b of data) h = (h * 31 + b) >>> 0; return 'x' + h; // запасной вариант без WebCrypto
+}
+const newSalt = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('');
+
+// Универсальный ввод 4 цифр на экране блокировки
+let pinCb = null, pinBuf = '';
+function showPad({ title, sub = '', icon = '🔒', bio = false, forgot = false, cancel = null }, cb) {
+  pinBuf = ''; pinCb = cb;
+  $('#lock-title').textContent = title; $('#lock-sub').textContent = sub; $('#lock-logo').textContent = icon;
+  const bb = $('#bio-btn');
+  bb.textContent = cancel ? '✕' : bio ? bioIcon() : ''; bb.disabled = !(cancel || bio);
+  bb.dataset.v = cancel ? 'cancel' : 'bio'; showPad.cancel = cancel;
+  $('#lock-forgot').style.display = forgot ? '' : 'none';
+  drawDots(); $('#lock').classList.add('show'); document.body.classList.add('locked');
+  if (tg && tg.BackButton) tg.BackButton.hide();
+}
+function hidePad() { $('#lock').classList.remove('show'); document.body.classList.remove('locked'); pinCb = null; }
+function drawDots() { $$('#lock-dots i').forEach((d, i) => d.classList.toggle('on', i < pinBuf.length)); }
+function padError(msg) {
+  pinBuf = ''; drawDots(); $('#lock-sub').textContent = msg; haptic('error');
+  const d = $('#lock-dots'); d.classList.remove('shake'); void d.offsetWidth; d.classList.add('shake');
+}
+function padPress(v) {
+  if (!pinCb) return;
+  if (v === 'cancel') { const c = showPad.cancel; hidePad(); return c && c(); }
+  if (v === 'bio') return unlockBio();
+  if (v === 'del') { pinBuf = pinBuf.slice(0, -1); return drawDots(); }
+  if (pinBuf.length >= 4 || Date.now() < (lockUntil || 0)) return;
+  haptic('tap'); pinBuf += v; drawDots();
+  if (pinBuf.length === 4) { const p = pinBuf, cb = pinCb; setTimeout(() => cb(p), 120); }
+}
+$('#pinpad').onclick = e => { const b = e.target.closest('button'); if (b && !b.disabled) padPress(b.dataset.v || b.textContent); };
+document.addEventListener('keydown', e => {
+  if (!pinCb) return;
+  if (/^\d$/.test(e.key)) padPress(e.key); else if (e.key === 'Backspace') padPress('del');
+});
+
+let fails = 0, lockUntil = 0, onUnlock = null;
+function lockApp() {
+  if (!meta.pin || $('#lock').classList.contains('show')) return;
+  closeAll();
+  showPad({ title: 'Введите код-пароль', bio: meta.bio && bioReady, forgot: true }, async p => {
+    if (await hashPin(p, meta.pin.salt) === meta.pin.hash) return unlocked();
+    fails++;
+    if (fails >= 5) {
+      lockUntil = Date.now() + 30000; padError('Слишком много попыток. Подождите 30 секунд');
+      setTimeout(() => { fails = 0; $('#lock-sub').textContent = ''; }, 30000);
+    } else padError(`Неверный код. Осталось попыток: ${5 - fails}`);
+  });
+  if (meta.bio && bioReady) setTimeout(unlockBio, 350);
+}
+async function unlockBio() { if (await bioAuth()) unlocked(); }
+function unlocked() {
+  fails = 0; haptic('success'); hidePad();
+  if (onUnlock) { const f = onUnlock; onUnlock = null; f(); } else render();
+}
+$('#lock-forgot').onclick = async () => {
+  if (!(await confirmBox('Сбросить код можно только вместе со всеми данными: карты, операции, копилки и бюджеты будут удалены безвозвратно. Продолжить?'))) return;
+  if (!(await confirmBox('Точно удалить все данные и код-пароль?'))) return;
+  const keys = ['meta', 'cards', 'budgets', 'goals', 'recur', ...Array.from({ length: meta.n }, (_, i) => 'o' + i)];
+  await Promise.all(keys.map(k => store.del(k)));
+  location.reload();
+};
+
+// Автоблокировка, если приложение было свёрнуто дольше минуты
+let hiddenAt = 0;
+const onHide = () => { hiddenAt = Date.now(); };
+const onShow = () => { if (meta.pin && hiddenAt && Date.now() - hiddenAt > 60000) lockApp(); hiddenAt = 0; };
+document.addEventListener('visibilitychange', () => document.hidden ? onHide() : onShow());
+try { tg.onEvent('deactivated', onHide); tg.onEvent('activated', onShow); } catch (e) {}
+
+function setupPin(done) {
+  showPad({ title: 'Придумайте код-пароль', sub: '4 цифры', icon: '🔐', cancel: () => done && done(false) }, first => {
+    showPad({ title: 'Повторите код', icon: '🔐', cancel: () => done && done(false) }, async second => {
+      if (first !== second) { hidePad(); toast('Коды не совпали, попробуйте ещё раз'); return setupPin(done); }
+      const salt = newSalt();
+      meta.pin = { salt, hash: await hashPin(first, salt) };
+      await saveMeta(); hidePad(); haptic('success');
+      if (bioReady && !meta.bio && await confirmBox(`Входить по ${bioName() === 'Face ID' ? 'Face ID' : bioName() === 'отпечаток' ? 'отпечатку пальца' : 'биометрии'}?`)) {
+        if (await bioAuth()) { meta.bio = true; await saveMeta(); }
+      }
+      toast('Код-пароль включён'); done && done(true);
+    });
+  });
+}
+function checkPin(title, ok) {
+  showPad({ title, cancel: () => openPinSettings() }, async p => {
+    if (await hashPin(p, meta.pin.salt) === meta.pin.hash) { hidePad(); ok(); }
+    else padError('Неверный код');
+  });
+}
+function openPinSettings() {
+  if (!meta.pin) { closeAll(); return setupPin(() => render()); }
+  openSheet(`<h2>Код-пароль</h2>
+    <div class="box menu" style="background:var(--bg2);box-shadow:none;padding:4px 16px">
+      ${bioReady ? `<button class="mi" id="ps-bio"><div class="ic" style="background:var(--bg)">${bioIcon()}</div><div class="mid"><div>Вход по ${bioName() === 'Face ID' ? 'Face ID' : bioName() === 'отпечаток' ? 'отпечатку' : 'биометрии'}</div></div><span class="switch ${meta.bio ? 'on' : ''}"></span></button>` : ''}
+      <button class="mi" id="ps-change"><div class="ic" style="background:var(--bg)">🔑</div><div class="mid"><div>Сменить код</div></div><span class="ar">›</span></button>
+    </div>
+    <div class="muted" style="font-size:13px;margin:-4px 4px 14px">Приложение блокируется при каждом открытии и если было свёрнуто дольше минуты.</div>
+    <button class="btn del" id="ps-off">Выключить код-пароль</button>`, () => {
+    if (bioReady) $('#ps-bio').onclick = async () => {
+      if (!meta.bio) { if (!(await bioAuth())) return toast('Не удалось подтвердить'); meta.bio = true; }
+      else meta.bio = false;
+      await saveMeta(); openPinSettings(); renderMore();
+    };
+    $('#ps-change').onclick = () => { closeAll(); checkPin('Введите текущий код', () => setupPin(() => { render(); openPinSettings(); })); };
+    $('#ps-off').onclick = () => { closeAll(); checkPin('Введите код, чтобы выключить', async () => {
+      delete meta.pin; meta.bio = false; await saveMeta(); render(); toast('Код-пароль выключен'); }); };
+  });
+}
+
 /* ================================================================ События */
-const OPEN = { budgets: openBudgets, goals: openGoals, recur: openRecurList, cards: openCardsList, currency: openCurrency, cats: openCats,
+const OPEN = { budgets: openBudgets, goals: openGoals, recur: openRecurList, cards: openCardsList, currency: openCurrency, cats: openCats, pin: openPinSettings,
   hide: async () => { meta.hide = !meta.hide; await saveMeta(); render(); } };
 document.addEventListener('click', e => {
   if (e.target.closest('#sheet')) return;
@@ -1338,7 +1511,8 @@ if (tg && tg.BackButton) tg.BackButton.onClick(closeSheet);
   }
   try { await load(); } catch (e) { $('#loading').textContent = 'Не удалось загрузить данные: ' + e; return; }
   $('#loading').remove();
-  render();
+  await initBio();
+  if (meta.pin) { onUnlock = () => render(); lockApp(); } else render();
   if (cards.some(c => c.cur !== meta.base) || goals.some(g => g.cur !== meta.base) || meta.ratesAt) { if (await refreshRates()) render(); }
 })();
 </script>
