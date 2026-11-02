@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Финансы</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: var(--tg-theme-bg-color, #ffffff);
+    --bg2: var(--tg-theme-secondary-bg-color, #f2f3f5);
+    --text: var(--tg-theme-text-color, #111317);
+    --hint: var(--tg-theme-hint-color, #8a8f98);
+    --accent: var(--tg-theme-button-color, #2f80ed);
+    --accent-text: var(--tg-theme-button-text-color, #ffffff);
+    --danger: var(--tg-theme-destructive-text-color, #e5484d);
+    --good: #1f9d55;
+    --line: color-mix(in srgb, var(--hint) 22%, transparent);
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg2); color: var(--text);
+    font: 15px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { padding-bottom: 96px; min-height: 100vh; }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+  input { font: inherit; color: var(--text); }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .page { display: none; padding: 14px 14px 0; }
+  .page.active { display: block; }
+  .section { background: var(--bg); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+  .section h3 { margin: 0 0 10px; font-size: 13px; font-weight: 600; color: var(--hint);
+    text-transform: uppercase; letter-spacing: .04em; }
+
+  /* Сводка */
+  .hero { padding: 6px 4px 14px; }
+  .hero .label { color: var(--hint); font-size: 13px; }
+  .hero .total { font-size: 34px; font-weight: 700; letter-spacing: -.02em; margin: 2px 0 8px; }
+  .hero .month { display: flex; gap: 16px; font-size: 13px; color: var(--hint); }
+  .hero .month b { color: var(--text); font-weight: 600; }
+
+  /* Карты */
+  .cards { display: flex; gap: 10px; overflow-x: auto; margin: 0 -14px 14px; padding: 2px 14px 6px;
+    scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .cards::-webkit-scrollbar { display: none; }
+  .card { flex: 0 0 156px; height: 96px; border-radius: 16px; padding: 12px; color: #fff; text-align: left;
+    display: flex; flex-direction: column; justify-content: space-between; scroll-snap-align: start;
+    box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .card .cn { font-size: 13px; opacity: .9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .cb { font-size: 19px; font-weight: 700; }
+  .card.add { background: var(--bg); color: var(--accent); box-shadow: none; border: 1.5px dashed var(--line);
+    align-items: center; justify-content: center; font-weight: 600; }
+
+  /* Операции */
+  .op { display: flex; align-items: center; gap: 12px; padding: 9px 0; width: 100%; text-align: left; }
+  .op + .op { border-top: 1px solid var(--line); }
+  .op .ic { width: 38px; height: 38px; border-radius: 12px; background: var(--bg2); display: grid;
+    place-items: center; font-size: 19px; flex: none; }
+  .op .mid { flex: 1; min-width: 0; }
+  .op .t1 { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .op .t2 { font-size: 12.5px; color: var(--hint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .op .amt { font-weight: 600; white-space: nowrap; }
+  .amt.in { color: var(--good); }
+  .day { font-size: 13px; font-weight: 600; color: var(--hint); margin: 14px 4px 6px; display: flex;
+    justify-content: space-between; }
+  .empty { color: var(--hint); text-align: center; padding: 18px 0; }
+
+  /* Статистика */
+  .monthbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .monthbar button { width: 40px; height: 40px; border-radius: 12px; background: var(--bg); font-size: 18px; }
+  .monthbar .mt { font-weight: 600; font-size: 17px; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  .kpi { background: var(--bg); border-radius: 14px; padding: 10px; }
+  .kpi .k1 { font-size: 12px; color: var(--hint); }
+  .kpi .k2 { font-weight: 700; font-size: 15px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar { padding: 8px 0; }
+  .bar + .bar { border-top: 1px solid var(--line); }
+  .bar .row { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+  .bar .row span:last-child { font-weight: 600; white-space: nowrap; }
+  .bar .pct { color: var(--hint); font-weight: 400; margin-left: 6px; }
+  .track { height: 8px; border-radius: 4px; background: var(--bg2); overflow: hidden; }
+  .fill { height: 100%; border-radius: 4px; background: var(--accent); }
+
+  /* Фильтры */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips.scroll { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -14px; padding: 0 14px; }
+  .chips.scroll::-webkit-scrollbar { display: none; }
+  .chip { padding: 8px 12px; border-radius: 12px; background: var(--bg2); white-space: nowrap; font-size: 14px; }
+  .chip.on { background: var(--accent); color: var(--accent-text); }
+  .page > .chips.scroll { margin-bottom: 4px; }
+  .page > .chips.scroll .chip { background: var(--bg); }
+  .page > .chips.scroll .chip.on { background: var(--accent); }
+
+  /* Нижнее меню и кнопка */
+  nav { position: fixed; left: 0; right: 0; bottom: 0; background: var(--bg); border-top: 1px solid var(--line);
+    display: flex; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); z-index: 5; }
+  nav button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px;
+    color: var(--hint); padding: 4px 0; }
+  nav button .ni { font-size: 21px; filter: grayscale(1); opacity: .7; }
+  nav button.on { color: var(--accent); }
+  nav button.on .ni { filter: none; opacity: 1; }
+  nav .plus { flex: 0 0 64px; }
+  nav .plus span { width: 52px; height: 52px; border-radius: 18px; background: var(--accent); color: var(--accent-text);
+    display: grid; place-items: center; font-size: 30px; font-weight: 300; margin-top: -22px;
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 45%, transparent); }
+
+  /* Шторка */
+  .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); opacity: 0; pointer-events: none;
+    transition: opacity .2s; z-index: 10; }
+  .backdrop.open { opacity: 1; pointer-events: auto; }
+  .sheet { position: fixed; left: 0; right: 0; bottom: 0; max-height: 92vh; overflow-y: auto; background: var(--bg);
+    border-radius: 20px 20px 0 0; padding: 10px 16px calc(16px + env(safe-area-inset-bottom));
+    transform: translateY(105%); transition: transform .25s ease; z-index: 11; }
+  .sheet.open { transform: none; }
+  .grab { width: 38px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 12px; }
+  .sheet h2 { margin: 0 0 14px; font-size: 19px; }
+  .seg { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--bg2); border-radius: 12px;
+    padding: 3px; margin-bottom: 14px; }
+  .seg button { padding: 8px; border-radius: 10px; font-weight: 500; color: var(--hint); }
+  .seg button.on { background: var(--bg); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  .bigamt { display: flex; align-items: baseline; gap: 6px; border-bottom: 2px solid var(--accent);
+    margin-bottom: 16px; }
+  .bigamt input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font-size: 34px;
+    font-weight: 700; padding: 4px 0; }
+  .bigamt span { font-size: 26px; color: var(--hint); font-weight: 600; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 13px; color: var(--hint); margin-bottom: 6px; }
+  .field input[type=text], .field input[type=date], .field input:not([type]) {
+    width: 100%; padding: 11px 12px; border-radius: 12px; border: 0; background: var(--bg2); outline: 0; }
+  .colors { display: flex; gap: 10px; }
+  .colors button { width: 34px; height: 34px; border-radius: 50%; }
+  .colors button.on { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .btn { width: 100%; padding: 14px; border-radius: 14px; background: var(--accent); color: var(--accent-text);
+    font-weight: 600; font-size: 16px; margin-top: 4px; }
+  .btn.ghost { background: var(--bg2); color: var(--danger); }
+  .btn:disabled { opacity: .45; }
+  .err { color: var(--danger); font-size: 13px; min-height: 18px; margin: -6px 0 6px; }
+  .toast { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%) translateY(20px); opacity: 0;
+    background: rgba(20,20,25,.92); color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 14px;
+    transition: .2s; z-index: 20; pointer-events: none; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%); }
+  .loading { text-align: center; color: var(--hint); padding: 60px 0; }
+</style>
+</head>
+<body>
+
+<div id="loading" class="loading">Загрузка…</div>
+
+<!-- Главная -->
+<section class="page" id="p-home">
+  <div class="hero">
+    <div class="label">Всего на картах</div>
+    <div class="total num" id="total">0 ₸</div>
+    <div class="month">
+      <div>Расходы за месяц: <b class="num" id="m-out">0</b></div>
+      <div>Доходы: <b class="num" id="m-in">0</b></div>
+    </div>
+  </div>
+  <div class="cards" id="cards"></div>
+  <div class="section">
+    <h3>Последние операции</h3>
+    <div id="recent"></div>
+  </div>
+</section>
+
+<!-- История -->
+<section class="page" id="p-history">
+  <div class="chips scroll" id="hist-filter"></div>
+  <div id="history"></div>
+</section>
+
+<!-- Статистика -->
+<section class="page" id="p-stats">
+  <div class="monthbar">
+    <button id="m-prev" aria-label="Предыдущий месяц">‹</button>
+    <div class="mt" id="m-title"></div>
+    <button id="m-next" aria-label="Следующий месяц">›</button>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="k1">Расходы</div><div class="k2 num" id="s-out"></div></div>
+    <div class="kpi"><div class="k1">Доходы</div><div class="k2 num" id="s-in"></div></div>
+    <div class="kpi"><div class="k1">Итог</div><div class="k2 num" id="s-diff"></div></div>
+  </div>
+  <div class="section">
+    <h3>Расходы по категориям</h3>
+    <div id="s-cats"></div>
+  </div>
+  <div class="section">
+    <h3>По картам</h3>
+    <div id="s-cards"></div>
+  </div>
+</section>
+
+<nav>
+  <button data-page="home" class="on"><span class="ni">🏠</span>Главная</button>
+  <button data-page="history"><span class="ni">🧾</span>История</button>
+  <button class="plus" id="btn-add" aria-label="Добавить операцию"><span>+</span></button>
+  <button data-page="stats"><span class="ni">📊</span>Статистика</button>
+  <button id="btn-cards"><span class="ni">💳</span>Карты</button>
+</nav>
+
+<div class="backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================ Хранилище
+   В Telegram — CloudStorage (данные привязаны к аккаунту, видны на всех устройствах).
+   В обычном браузере — localStorage, чтобы можно было проверить. */
+const tg = window.Telegram && window.Telegram.WebApp;
+const CLOUD = !!(tg && tg.initData && tg.isVersionAtLeast && tg.isVersionAtLeast('6.9'));
+const CUR = '₸';
+const CHUNK = 45; // операций на один ключ (лимит Telegram — 4096 символов на значение)
+
+const store = {
+  get(keys) {
+    if (!keys.length) return Promise.resolve({});
+    if (!CLOUD) {
+      const o = {}; keys.forEach(k => o[k] = localStorage.getItem('fin_' + k) || ''); return Promise.resolve(o);
+    }
+    const batches = [];
+    for (let i = 0; i < keys.length; i += 50) batches.push(keys.slice(i, i + 50));
+    return Promise.all(batches.map(b => new Promise((res, rej) =>
+      tg.CloudStorage.getItems(b, (e, v) => e ? rej(e) : res(v || {})))))
+      .then(parts => Object.assign({}, ...parts));
+  },
+  set(k, v) {
+    if (!CLOUD) { localStorage.setItem('fin_' + k, v); return Promise.resolve(); }
+    return new Promise((res, rej) => tg.CloudStorage.setItem(k, v, e => e ? rej(e) : res()));
+  },
+  del(k) {
+    if (!CLOUD) { localStorage.removeItem('fin_' + k); return Promise.resolve(); }
+    return new Promise(res => tg.CloudStorage.removeItem(k, () => res()));
+  },
+};
+
+/* ============================================================ Данные */
+const EXP_CATS = [
+  ['Продукты','🛒'],['Кафе','🍔'],['Транспорт','🚕'],['Дом','🏠'],['Связь','📱'],
+  ['Здоровье','💊'],['Одежда','👕'],['Развлечения','🎉'],['Подарки','🎁'],['Подписки','🔁'],['Другое','📦'],
+];
+const INC_CATS = [['Зарплата','💼'],['Подработка','💸'],['Кэшбэк','🪙'],['Подарок','🎁'],['Другое','📦']];
+const COLORS = ['#f14635','#2f80ed','#1f9d55','#8b5cf6','#f59e0b','#111827','#ec4899','#0ea5a4'];
+
+let meta = { n: 0, next: 1, cats: [], icats: [] };
+let cards = [];  // {id, name, start, color}
+let ops = [];    // {id, t, k:'e'|'i'|'t'|'a', a, c, f, to}
+
+const pack = o => [o.id, o.t, o.k, o.a, o.c || '', o.f || 0, o.to || 0];
+const unpack = r => ({ id: r[0], t: r[1], k: r[2], a: r[3], c: r[4], f: r[5], to: r[6] });
+
+async function load() {
+  const base = await store.get(['meta', 'cards']);
+  if (base.meta) meta = Object.assign(meta, JSON.parse(base.meta));
+  if (base.cards) cards = JSON.parse(base.cards);
+  const keys = Array.from({ length: meta.n }, (_, i) => 'o' + i);
+  const chunks = await store.get(keys);
+  ops = [];
+  keys.forEach(k => { if (chunks[k]) JSON.parse(chunks[k]).forEach(r => ops.push(unpack(r))); });
+  ops.sort((a, b) => a.id - b.id);
+}
+
+const saveMeta = () => store.set('meta', JSON.stringify(meta));
+const saveCards = () => store.set('cards', JSON.stringify(cards));
+
+// Переписывает ключи начиная с чанка, где лежит операция с индексом fromIdx
+async function saveOps(fromIdx) {
+  const first = Math.max(0, Math.floor(fromIdx / CHUNK));
+  const newN = Math.ceil(ops.length / CHUNK);
+  const jobs = [];
+  for (let i = first; i < newN; i++)
+    jobs.push(store.set('o' + i, JSON.stringify(ops.slice(i * CHUNK, (i + 1) * CHUNK).map(pack))));
+  for (let i = newN; i < meta.n; i++) jobs.push(store.del('o' + i));
+  meta.n = newN;
+  jobs.push(saveMeta());
+  await Promise.all(jobs);
+}
+
+async function addOp(o) {
+  o.id = meta.next++;
+  ops.push(o);
+  ops.sort((a, b) => a.t - b.t || a.id - b.id);
+  await saveOps(ops.indexOf(o));
+}
+
+async function deleteOp(id) {
+  const i = ops.findIndex(o => o.id === id);
+  if (i < 0) return;
+  ops.splice(i, 1);
+  await saveOps(i);
+}
+
+function balance(cardId) {
+  const c = cards.find(x => x.id === cardId);
+  let b = c ? c.start : 0;
+  for (const o of ops) {
+    if (o.k === 'e' && o.f === cardId) b -= o.a;
+    else if (o.k === 'i' && o.f === cardId) b += o.a;
+    else if (o.k === 'a' && o.f === cardId) b += o.a;
+    else if (o.k === 't') { if (o.f === cardId) b -= o.a; if (o.to === cardId) b += o.a; }
+  }
+  return b;
+}
+
+/* ============================================================ Утилиты */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+function money(v, sign) {
+  const neg = v < 0; v = Math.abs(v);
+  let s = Math.floor(v / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  if (v % 100) s += ',' + String(v % 100).padStart(2, '0');
+  return (neg ? '−' : sign && v ? '+' : '') + s + ' ' + CUR;
+}
+function parseMoney(s) {
+  s = String(s).replace(/[\s  ]/g, '').replace(',', '.');
+  if (!/^\d+(\.\d{0,2})?$/.test(s)) return null;
+  return Math.round(parseFloat(s) * 100);
+}
+const icon = (cat, kind) => ((kind === 'i' ? INC_CATS : EXP_CATS).find(c => c[0] === cat) || [0, '🏷️'])[1];
+const cardName = id => (cards.find(c => c.id === id) || { name: 'удалена' }).name;
+const ym = t => { const d = new Date(t * 1000); return d.getFullYear() * 12 + d.getMonth(); };
+const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const MONTHS_G = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+function dayLabel(t) {
+  const d = new Date(t * 1000), now = new Date();
+  const same = (a, b) => a.toDateString() === b.toDateString();
+  const y = new Date(); y.setDate(y.getDate() - 1);
+  if (same(d, now)) return 'Сегодня';
+  if (same(d, y)) return 'Вчера';
+  return d.getDate() + ' ' + MONTHS_G[d.getMonth()] + (d.getFullYear() !== now.getFullYear() ? ' ' + d.getFullYear() : '');
+}
+function haptic(type) { try { tg.HapticFeedback.notificationOccurred(type); } catch (e) {} }
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 1800);
+}
+function confirmBox(text) {
+  return new Promise(res => (CLOUD && tg.showConfirm) ? tg.showConfirm(text, ok => res(ok)) : res(confirm(text)));
+}
+
+/* ============================================================ Отрисовка */
+let page = 'home', statMonth = null, histCard = 0;
+
+function opRow(o) {
+  let ic, t1, t2, amt, cls = '';
+  if (o.k === 'e') { ic = icon(o.c, 'e'); t1 = o.c; t2 = cardName(o.f); amt = money(-o.a); }
+  else if (o.k === 'i') { ic = icon(o.c, 'i'); t1 = o.c; t2 = cardName(o.f); amt = money(o.a, true); cls = 'in'; }
+  else if (o.k === 't') { ic = '🔁'; t1 = 'Перевод'; t2 = cardName(o.f) + ' → ' + cardName(o.to); amt = money(o.a); }
+  else { ic = '✏️'; t1 = 'Корректировка'; t2 = cardName(o.f); amt = money(o.a, true); cls = o.a > 0 ? 'in' : ''; }
+  const time = new Date(o.t * 1000).toTimeString().slice(0, 5);
+  return `<button class="op" data-op="${o.id}"><div class="ic">${ic}</div>
+    <div class="mid"><div class="t1">${esc(t1)}</div><div class="t2">${esc(t2)} · ${time}</div></div>
+    <div class="amt num ${cls}">${amt}</div></button>`;
+}
+
+function renderHome() {
+  $('#total').textContent = money(cards.reduce((s, c) => s + balance(c.id), 0));
+  const cur = ym(Date.now() / 1000);
+  let out = 0, inc = 0;
+  ops.forEach(o => { if (ym(o.t) === cur) { if (o.k === 'e') out += o.a; if (o.k === 'i') inc += o.a; } });
+  $('#m-out').textContent = money(out); $('#m-in').textContent = money(inc);
+  $('#cards').innerHTML = cards.map(c =>
+    `<button class="card" data-card="${c.id}" style="background:linear-gradient(135deg, ${c.color}, ${c.color}cc)">
+      <div class="cn">${esc(c.name)}</div><div class="cb num">${money(balance(c.id))}</div></button>`).join('')
+    + `<button class="card add" id="add-card">＋ Карта</button>`;
+  const recent = ops.slice(-8).reverse();
+  $('#recent').innerHTML = recent.length ? recent.map(opRow).join('')
+    : `<div class="empty">${cards.length ? 'Нажмите «+», чтобы записать первую трату' : 'Сначала добавьте карту'}</div>`;
+}
+
+function renderHistory() {
+  $('#hist-filter').innerHTML = [{ id: 0, name: 'Все карты' }, ...cards].map(c =>
+    `<button class="chip ${histCard === c.id ? 'on' : ''}" data-hcard="${c.id}">${esc(c.name)}</button>`).join('');
+  const list = ops.filter(o => !histCard || o.f === histCard || o.to === histCard).slice().reverse();
+  if (!list.length) { $('#history').innerHTML = '<div class="section"><div class="empty">Операций нет</div></div>'; return; }
+  let html = '', curDay = null, group = [];
+  const flush = () => {
+    if (!group.length) return;
+    const spent = group.filter(o => o.k === 'e').reduce((s, o) => s + o.a, 0);
+    html += `<div class="day"><span>${dayLabel(group[0].t)}</span><span class="num">${spent ? money(-spent) : ''}</span></div>
+      <div class="section" style="padding:4px 14px">${group.map(opRow).join('')}</div>`;
+    group = [];
+  };
+  list.slice(0, 300).forEach(o => {
+    const d = new Date(o.t * 1000).toDateString();
+    if (d !== curDay) { flush(); curDay = d; }
+    group.push(o);
+  });
+  flush();
+  $('#history').innerHTML = html;
+}
+
+function renderStats() {
+  if (statMonth === null) statMonth = ym(Date.now() / 1000);
+  $('#m-title').textContent = MONTHS[statMonth % 12] + ' ' + Math.floor(statMonth / 12);
+  const m = ops.filter(o => ym(o.t) === statMonth);
+  const out = m.filter(o => o.k === 'e').reduce((s, o) => s + o.a, 0);
+  const inc = m.filter(o => o.k === 'i').reduce((s, o) => s + o.a, 0);
+  $('#s-out').textContent = money(out); $('#s-in').textContent = money(inc);
+  $('#s-diff').textContent = money(inc - out, true);
+  $('#s-diff').style.color = inc - out < 0 ? 'var(--danger)' : 'var(--good)';
+
+  const bars = (map, kind) => {
+    const rows = Object.entries(map).sort((a, b) => b[1] - a[1]);
+    if (!rows.length) return '<div class="empty">Трат нет</div>';
+    const max = rows[0][1];
+    return rows.map(([k, v]) => `<div class="bar"><div class="row">
+      <span>${kind ? icon(k, 'e') + ' ' : ''}${esc(k)}</span>
+      <span class="num">${money(v)}<span class="pct">${Math.round(v * 100 / out)}%</span></span></div>
+      <div class="track"><div class="fill" style="width:${Math.max(2, v * 100 / max)}%"></div></div></div>`).join('');
+  };
+  const byCat = {}, byCard = {};
+  m.filter(o => o.k === 'e').forEach(o => {
+    byCat[o.c] = (byCat[o.c] || 0) + o.a;
+    const n = cardName(o.f); byCard[n] = (byCard[n] || 0) + o.a;
+  });
+  $('#s-cats').innerHTML = bars(byCat, true);
+  $('#s-cards').innerHTML = bars(byCard, false);
+}
+
+function render() {
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'p-' + page));
+  document.querySelectorAll('nav [data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === page));
+  ({ home: renderHome, history: renderHistory, stats: renderStats })[page]();
+}
+
+/* ============================================================ Шторки */
+function openSheet(html, bind) {
+  $('#sheet').innerHTML = '<div class="grab"></div>' + html;
+  $('#sheet').classList.add('open'); $('#backdrop').classList.add('open');
+  if (tg && tg.BackButton) tg.BackButton.show();
+  bind && bind($('#sheet'));
+}
+function closeSheet() {
+  $('#sheet').classList.remove('open'); $('#backdrop').classList.remove('open');
+  if (tg && tg.BackButton) tg.BackButton.hide();
+  document.activeElement && document.activeElement.blur();
+}
+
+function openAdd(kind = 'e') {
+  if (!cards.length) { openCard(); toast('Сначала добавьте карту'); return; }
+  const def = cards[0].id;
+  const st = { k: kind, c: null, f: def, to: (cards[1] || cards[0]).id };
+  const cats = () => {
+    const base = st.k === 'i' ? INC_CATS : EXP_CATS;
+    const extra = (st.k === 'i' ? meta.icats : meta.cats).map(c => [c, '🏷️']);
+    return [...base.slice(0, -1), ...extra, base[base.length - 1]];
+  };
+  const today = new Date(); today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+  openSheet(`
+    <div class="seg" id="a-seg">
+      <button data-k="e">Расход</button><button data-k="i">Доход</button><button data-k="t">Перевод</button>
+    </div>
+    <div class="bigamt"><input id="a-amt" inputmode="decimal" placeholder="0" autocomplete="off"><span>${CUR}</span></div>
+    <div class="field" id="a-cat-f"><label>Категория</label><div class="chips" id="a-cats"></div>
+      <input type="text" id="a-newcat" maxlength="24" placeholder="Название категории" style="display:none;margin-top:8px"></div>
+    <div class="field"><label id="a-from-l">Карта</label><div class="chips" id="a-from"></div></div>
+    <div class="field" id="a-to-f"><label>На карту</label><div class="chips" id="a-to"></div></div>
+    <div class="field"><label>Дата</label><input type="date" id="a-date" value="${today.toISOString().slice(0, 10)}"></div>
+    <div class="err" id="a-err"></div>
+    <button class="btn" id="a-save">Сохранить</button>`, s => {
+    const draw = () => {
+      s.querySelectorAll('#a-seg button').forEach(b => b.classList.toggle('on', b.dataset.k === st.k));
+      $('#a-cat-f').style.display = st.k === 't' ? 'none' : '';
+      $('#a-to-f').style.display = st.k === 't' ? '' : 'none';
+      $('#a-from-l').textContent = st.k === 't' ? 'С карты' : st.k === 'i' ? 'На карту' : 'С карты';
+      $('#a-cats').innerHTML = cats().map(([n, i]) =>
+        `<button class="chip ${st.c === n ? 'on' : ''}" data-cat="${esc(n)}">${i} ${esc(n)}</button>`).join('')
+        + `<button class="chip" data-cat="__new">＋ Своя</button>`;
+      const chips = (sel) => cards.map(c =>
+        `<button class="chip ${sel === c.id ? 'on' : ''}" data-id="${c.id}">${esc(c.name)} · <span class="num">${money(balance(c.id))}</span></button>`).join('');
+      $('#a-from').innerHTML = chips(st.f); $('#a-to').innerHTML = chips(st.to);
+    };
+    draw();
+    s.querySelector('#a-seg').onclick = e => { const k = e.target.dataset.k; if (k) { st.k = k; st.c = null; $('#a-newcat').style.display = 'none'; draw(); } };
+    $('#a-cats').onclick = e => {
+      const b = e.target.closest('[data-cat]'); if (!b) return;
+      const c = b.dataset.cat;
+      const inp = $('#a-newcat');
+      if (c === '__new') { st.c = null; draw(); inp.style.display = ''; inp.value = ''; inp.focus(); return; }
+      inp.style.display = 'none'; st.c = c; draw();
+    };
+    $('#a-newcat').oninput = e => { st.c = e.target.value.trim() || null; draw(); };
+    $('#a-from').onclick = e => { const b = e.target.closest('[data-id]'); if (b) { st.f = +b.dataset.id; draw(); } };
+    $('#a-to').onclick = e => { const b = e.target.closest('[data-id]'); if (b) { st.to = +b.dataset.id; draw(); } };
+    setTimeout(() => $('#a-amt').focus(), 280);
+    $('#a-save').onclick = async () => {
+      const a = parseMoney($('#a-amt').value);
+      const err = m => { $('#a-err').textContent = m; haptic('error'); };
+      if (!a) return err('Введите сумму');
+      if (st.k !== 't' && !st.c) return err('Выберите категорию');
+      if (st.k === 't' && st.f === st.to) return err('Выберите две разные карты');
+      // Время: выбранная дата + текущее время суток
+      const now = new Date(), d = new Date($('#a-date').value + 'T00:00');
+      if (isNaN(d)) return err('Неверная дата');
+      d.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+      $('#a-save').disabled = true;
+      try {
+        if (st.k !== 't' && !cats().some(x => x[0].toLowerCase() === st.c.toLowerCase())) {
+          (st.k === 'i' ? meta.icats : meta.cats).push(st.c);
+        } else if (st.k !== 't') {
+          st.c = cats().find(x => x[0].toLowerCase() === st.c.toLowerCase())[0];
+        }
+        await addOp({ t: Math.floor(d.getTime() / 1000), k: st.k, a, c: st.k === 't' ? '' : st.c, f: st.f, to: st.k === 't' ? st.to : 0 });
+        haptic('success'); closeSheet(); render();
+        toast(st.k === 't' ? 'Перевод сохранён' : `${cardName(st.f)}: ${money(balance(st.f))}`);
+      } catch (e) { $('#a-save').disabled = false; err('Не удалось сохранить, попробуйте ещё раз'); }
+    };
+  });
+}
+
+function openCard(id) {
+  const c = cards.find(x => x.id === id);
+  let color = c ? c.color : COLORS[cards.length % COLORS.length];
+  openSheet(`
+    <h2>${c ? 'Карта' : 'Новая карта'}</h2>
+    <div class="field"><label>Название</label><input type="text" id="c-name" maxlength="24" placeholder="Kaspi Gold" value="${c ? esc(c.name) : ''}"></div>
+    <div class="field"><label>${c ? 'Сейчас на карте' : 'Текущий баланс'}</label>
+      <input type="text" id="c-bal" inputmode="decimal" placeholder="0" value="${c ? (balance(c.id) / 100).toString().replace('.', ',') : ''}"></div>
+    <div class="field"><label>Цвет</label><div class="colors" id="c-colors"></div></div>
+    <div class="err" id="c-err"></div>
+    <button class="btn" id="c-save">Сохранить</button>
+    ${c ? '<button class="btn ghost" id="c-del" style="margin-top:8px">Удалить карту</button>' : ''}`, s => {
+    const drawC = () => $('#c-colors').innerHTML = COLORS.map(x =>
+      `<button style="background:${x}" class="${x === color ? 'on' : ''}" data-color="${x}"></button>`).join('');
+    drawC();
+    $('#c-colors').onclick = e => { if (e.target.dataset.color) { color = e.target.dataset.color; drawC(); } };
+    if (!c) setTimeout(() => $('#c-name').focus(), 280);
+    $('#c-save').onclick = async () => {
+      const name = $('#c-name').value.trim();
+      const raw = $('#c-bal').value.trim().replace(/^-|^−/, '');
+      const neg = /^[-−]/.test($('#c-bal').value.trim());
+      let bal = raw ? parseMoney(raw) : 0;
+      if (!name) return ($('#c-err').textContent = 'Введите название');
+      if (bal === null) return ($('#c-err').textContent = 'Неверная сумма');
+      if (neg) bal = -bal;
+      if (c) {
+        c.name = name; c.color = color;
+        const diff = bal - balance(c.id);
+        if (diff) await addOp({ t: Math.floor(Date.now() / 1000), k: 'a', a: diff, c: '', f: c.id, to: 0 });
+      } else {
+        cards.push({ id: meta.next++, name, start: bal, color });
+        await saveMeta();
+      }
+      await saveCards();
+      haptic('success'); closeSheet(); render();
+    };
+    if (c) $('#c-del').onclick = async () => {
+      if (!(await confirmBox(`Удалить «${c.name}»? Операции по ней останутся в истории.`))) return;
+      cards = cards.filter(x => x.id !== c.id);
+      await saveCards(); closeSheet(); render();
+    };
+  });
+}
+
+function openCardsList() {
+  openSheet(`<h2>Карты</h2><div id="cl"></div>
+    <button class="btn" id="cl-add" style="margin-top:12px">＋ Добавить карту</button>`, () => {
+    $('#cl').innerHTML = cards.length ? cards.map(c => `<button class="op" data-card="${c.id}">
+      <div class="ic" style="background:${c.color};color:#fff">💳</div>
+      <div class="mid"><div class="t1">${esc(c.name)}</div></div>
+      <div class="amt num">${money(balance(c.id))}</div></button>`).join('') : '<div class="empty">Карт пока нет</div>';
+    $('#cl').onclick = e => { const b = e.target.closest('[data-card]'); if (b) openCard(+b.dataset.card); };
+    $('#cl-add').onclick = () => openCard();
+  });
+}
+
+async function onOpClick(id) {
+  const o = ops.find(x => x.id === id); if (!o) return;
+  if (await confirmBox('Удалить эту операцию? Баланс карты пересчитается.')) {
+    await deleteOp(id); haptic('warning'); render(); toast('Удалено');
+  }
+}
+
+/* ============================================================ События */
+document.addEventListener('click', e => {
+  const nav = e.target.closest('nav [data-page]');
+  if (nav) { page = nav.dataset.page; render(); window.scrollTo(0, 0); return; }
+  const card = e.target.closest('#cards [data-card]');
+  if (card) return openCard(+card.dataset.card);
+  if (e.target.closest('#add-card')) return openCard();
+  const op = e.target.closest('.page [data-op]');
+  if (op) return onOpClick(+op.dataset.op);
+  const hc = e.target.closest('[data-hcard]');
+  if (hc) { histCard = +hc.dataset.hcard; renderHistory(); }
+});
+$('#btn-add').onclick = () => openAdd();
+$('#btn-cards').onclick = openCardsList;
+$('#backdrop').onclick = closeSheet;
+$('#m-prev').onclick = () => { statMonth--; renderStats(); };
+$('#m-next').onclick = () => { statMonth++; renderStats(); };
+if (tg && tg.BackButton) tg.BackButton.onClick(closeSheet);
+
+(async () => {
+  if (tg) { tg.ready(); tg.expand(); try { tg.setHeaderColor('secondary_bg_color'); } catch (e) {} }
+  try { await load(); } catch (e) { $('#loading').textContent = 'Не удалось загрузить данные: ' + e; return; }
+  $('#loading').remove();
+  render();
+})();
+</script>
+</body>
+</html>
