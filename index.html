@@ -796,7 +796,7 @@ function renderStats() {
 
 /* ================================================================ Ещё */
 function renderMore() {
-  $('#pin-state').textContent = meta.pin ? 'Включён' + (meta.bio ? ' · ' + bioName() : '') : 'Выключен';
+  $('#pin-state').textContent = 'Сменить код' + (bioReady ? ' · ' + bioName() : '');
   $('#more-cur').textContent = 'Основная: ' + sym(meta.base) + ' ' + CURS[meta.base][1];
   $('#hide-sw').classList.toggle('on', !!meta.hide);
 }
@@ -1433,17 +1433,19 @@ const onShow = () => { if (meta.pin && hiddenAt && Date.now() - hiddenAt > 60000
 document.addEventListener('visibilitychange', () => document.hidden ? onHide() : onShow());
 try { tg.onEvent('deactivated', onHide); tg.onEvent('activated', onShow); } catch (e) {}
 
-function setupPin(done) {
-  showPad({ title: 'Придумайте код-пароль', sub: '4 цифры', icon: '🔐', cancel: () => done && done(false) }, first => {
-    showPad({ title: 'Повторите код', icon: '🔐', cancel: () => done && done(false) }, async second => {
-      if (first !== second) { hidePad(); toast('Коды не совпали, попробуйте ещё раз'); return setupPin(done); }
+function setupPin(done, required) {
+  const cancel = required ? null : () => done && done(false);
+  showPad({ title: required ? 'Защитите свои финансы' : 'Придумайте код-пароль',
+            sub: required ? 'Придумайте код из 4 цифр — он понадобится при каждом входе' : '4 цифры', icon: '🔐', cancel }, first => {
+    showPad({ title: 'Повторите код', sub: 'Чтобы не ошибиться', icon: '🔐', cancel }, async second => {
+      if (first !== second) { hidePad(); toast('Коды не совпали, попробуйте ещё раз'); return setupPin(done, required); }
       const salt = newSalt();
       meta.pin = { salt, hash: await hashPin(first, salt) };
       await saveMeta(); hidePad(); haptic('success');
       if (bioReady && !meta.bio && await confirmBox(`Входить по ${bioName() === 'Face ID' ? 'Face ID' : bioName() === 'отпечаток' ? 'отпечатку пальца' : 'биометрии'}?`)) {
         if (await bioAuth()) { meta.bio = true; await saveMeta(); }
       }
-      toast('Код-пароль включён'); done && done(true);
+      toast(required ? 'Готово! Код-пароль установлен' : 'Код-пароль включён'); done && done(true);
     });
   });
 }
@@ -1460,16 +1462,13 @@ function openPinSettings() {
       ${bioReady ? `<button class="mi" id="ps-bio"><div class="ic" style="background:var(--bg)">${bioIcon()}</div><div class="mid"><div>Вход по ${bioName() === 'Face ID' ? 'Face ID' : bioName() === 'отпечаток' ? 'отпечатку' : 'биометрии'}</div></div><span class="switch ${meta.bio ? 'on' : ''}"></span></button>` : ''}
       <button class="mi" id="ps-change"><div class="ic" style="background:var(--bg)">🔑</div><div class="mid"><div>Сменить код</div></div><span class="ar">›</span></button>
     </div>
-    <div class="muted" style="font-size:13px;margin:-4px 4px 14px">Приложение блокируется при каждом открытии и если было свёрнуто дольше минуты.</div>
-    <button class="btn del" id="ps-off">Выключить код-пароль</button>`, () => {
+    <div class="muted" style="font-size:13px;margin:-4px 4px 4px">Приложение блокируется при каждом открытии и если было свёрнуто дольше минуты.</div>`, () => {
     if (bioReady) $('#ps-bio').onclick = async () => {
       if (!meta.bio) { if (!(await bioAuth())) return toast('Не удалось подтвердить'); meta.bio = true; }
       else meta.bio = false;
       await saveMeta(); openPinSettings(); renderMore();
     };
     $('#ps-change').onclick = () => { closeAll(); checkPin('Введите текущий код', () => setupPin(() => { render(); openPinSettings(); })); };
-    $('#ps-off').onclick = () => { closeAll(); checkPin('Введите код, чтобы выключить', async () => {
-      delete meta.pin; meta.bio = false; await saveMeta(); render(); toast('Код-пароль выключен'); }); };
   });
 }
 
@@ -1512,7 +1511,8 @@ if (tg && tg.BackButton) tg.BackButton.onClick(closeSheet);
   try { await load(); } catch (e) { $('#loading').textContent = 'Не удалось загрузить данные: ' + e; return; }
   $('#loading').remove();
   await initBio();
-  if (meta.pin) { onUnlock = () => render(); lockApp(); } else render();
+  if (meta.pin) { onUnlock = () => render(); lockApp(); }
+  else setupPin(() => render(), true);   // код обязателен: просим придумать при первом открытии
   if (cards.some(c => c.cur !== meta.base) || goals.some(g => g.cur !== meta.base) || meta.ratesAt) { if (await refreshRates()) render(); }
 })();
 </script>
