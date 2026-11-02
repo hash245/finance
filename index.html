@@ -64,9 +64,9 @@
   .hero .saved { font-size: 12.5px; opacity: .85; margin-top: 12px; position: relative; z-index: 1; }
 
   /* Быстрые действия */
-  .quick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0 4px; }
+  .quick { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 16px 0 4px; }
   .qa { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; }
-  .qa span { width: 54px; height: 54px; border-radius: 18px; display: grid; place-items: center; font-size: 22px;
+  .qa span { width: 52px; height: 52px; border-radius: 18px; display: grid; place-items: center; font-size: 22px;
     background: var(--bg); box-shadow: var(--shadow); transition: transform .12s; }
   .qa:active span { transform: scale(.92); }
 
@@ -281,6 +281,33 @@
   .goal .t1 { font-weight: 700; }
   .goal .t2 { font-size: 12.5px; color: var(--hint); }
   .goal .pct { font-weight: 800; font-size: 17px; }
+
+  /* Импорт скриншотов */
+  .shots { display: flex; gap: 8px; overflow-x: auto; margin: 0 -16px 12px; padding: 0 16px; scrollbar-width: none; }
+  .shots img { height: 120px; border-radius: 12px; flex: none; box-shadow: var(--shadow); }
+  .pick { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 140px;
+    border: 2px dashed var(--line); border-radius: 18px; color: var(--accent); font-weight: 600; margin-bottom: 12px; position: relative; }
+  .pick input { position: absolute; inset: 0; opacity: 0; }
+  .pick .big { font-size: 34px; }
+  .spinner { width: 42px; height: 42px; border-radius: 50%; border: 4px solid var(--soft); border-top-color: var(--accent);
+    animation: spin 1s linear infinite; margin: 30px auto 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .imp { display: flex; gap: 10px; align-items: flex-start; padding: 11px 0; }
+  .imp + .imp { border-top: 1px solid var(--line); }
+  .imp.off { opacity: .45; }
+  .imp .chk { width: 24px; height: 24px; border-radius: 8px; border: 2px solid var(--line); flex: none; margin-top: 9px;
+    display: grid; place-items: center; font-size: 14px; color: #fff; }
+  .imp.on .chk { background: var(--accent); border-color: var(--accent); }
+  .imp .ic { width: 40px; height: 40px; }
+  .imp .mid { flex: 1; min-width: 0; }
+  .imp .t1 { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .imp .meta { display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
+  .imp select, .imp input[type=date] { font: inherit; font-size: 12.5px; color: var(--text); background: var(--bg2); border: 0;
+    border-radius: 8px; padding: 4px 6px; max-width: 150px; }
+  .imp .amt { font-weight: 700; white-space: nowrap; padding: 6px 8px; border-radius: 10px; background: var(--bg2); }
+  .imp .amt.in { color: var(--good); }
+  .tag { font-size: 11.5px; font-weight: 600; padding: 3px 7px; border-radius: 7px; background: color-mix(in srgb, var(--warn) 18%, transparent);
+    color: color-mix(in srgb, var(--warn) 70%, var(--text)); }
 </style>
 </head>
 <body>
@@ -309,6 +336,7 @@
     <button class="qa" data-quick="e"><span style="background:color-mix(in srgb,#ef4444 14%,var(--bg))">💸</span>Расход</button>
     <button class="qa" data-quick="i"><span style="background:color-mix(in srgb,#22c55e 14%,var(--bg))">💰</span>Доход</button>
     <button class="qa" data-quick="t"><span style="background:color-mix(in srgb,#3b82f6 14%,var(--bg))">🔁</span>Перевод</button>
+    <button class="qa" data-open="import"><span style="background:color-mix(in srgb,#8b5cf6 14%,var(--bg))">📷</span>Скрин</button>
     <button class="qa" data-quick="g"><span style="background:color-mix(in srgb,#ec4899 14%,var(--bg))">🐷</span>Копилка</button>
   </div>
   <div class="head"><h2>Мои карты</h2><button class="link" id="all-cards">Все</button></div>
@@ -363,6 +391,7 @@
     <button class="mi" data-open="currency"><div class="ic">💱</div><div class="mid"><div>Валюта и курсы</div><div class="t2" id="more-cur"></div></div><span class="ar">›</span></button>
     <button class="mi" data-open="hide"><div class="ic">🙈</div><div class="mid"><div>Скрывать балансы</div><div class="t2">Когда рядом посторонние</div></div><span class="switch" id="hide-sw"></span></button>
     <button class="mi" data-open="pin"><div class="ic">🔒</div><div class="mid"><div>Код-пароль</div><div class="t2" id="pin-state"></div></div><span class="ar">›</span></button>
+    <button class="mi" data-open="aiset"><div class="ic">🤖</div><div class="mid"><div>Распознавание скринов</div><div class="t2" id="ai-state"></div></div><span class="ar">›</span></button>
     <button class="mi" data-open="cats"><div class="ic">🏷️</div><div class="mid"><div>Свои категории</div></div><span class="ar">›</span></button>
   </div>
   <div class="muted" style="font-size:12.5px;text-align:center;padding:4px 20px 10px">
@@ -796,6 +825,7 @@ function renderStats() {
 
 /* ================================================================ Ещё */
 function renderMore() {
+  $('#ai-state').textContent = meta.ai ? 'Подключено' : 'Не настроено';
   $('#pin-state').textContent = 'Сменить код' + (bioReady ? ' · ' + bioName() : '');
   $('#more-cur').textContent = 'Основная: ' + sym(meta.base) + ' ' + CURS[meta.base][1];
   $('#hide-sw').classList.toggle('on', !!meta.hide);
@@ -1472,8 +1502,190 @@ function openPinSettings() {
   });
 }
 
+/* ================================================================ Импорт скриншотов (ИИ) */
+function openAiSettings(back) {
+  openSheet(`<h2>Распознавание скринов</h2>
+    <div class="muted" style="font-size:13.5px;margin:-6px 0 14px">Скриншоты из банка читает ИИ через ваш посредник на Cloudflare.
+      Вставьте его адрес — он выглядит так: <b>https://finance-ai.ваше-имя.workers.dev</b></div>
+    <div class="field"><label>Адрес посредника</label><input class="inp" id="ai-url" placeholder="https://…workers.dev" value="${esc(meta.ai || '')}" autocomplete="off"></div>
+    <div class="err" id="ai-err"></div>
+    <button class="btn" id="ai-save">Проверить и сохранить</button>
+    ${meta.ai ? '<button class="btn del" id="ai-off" style="margin-top:8px">Отключить</button>' : ''}`, () => {
+    $('#ai-save').onclick = async () => {
+      let url = $('#ai-url').value.trim().replace(/\/+$/, '');
+      if (url && !/^https?:\/\//.test(url)) url = 'https://' + url;
+      if (!/^https:\/\/[^\s/]+/.test(url)) return ($('#ai-err').textContent = 'Введите адрес, начинающийся с https://');
+      $('#ai-save').disabled = true; $('#ai-err').textContent = '';
+      try {
+        const r = await fetch(url).then(x => x.json());
+        if (!r.ok) throw 0;
+        meta.ai = url; await saveMeta(); haptic('success'); toast('Подключено ✓');
+        render(); return back ? back() : closeAll();
+      } catch (e) { $('#ai-err').textContent = 'Не удалось связаться с посредником. Проверьте адрес и что Worker развёрнут.'; }
+      $('#ai-save').disabled = false;
+    };
+    if (meta.ai) $('#ai-off').onclick = async () => { delete meta.ai; await saveMeta(); render(); closeAll(); };
+  }, back);
+}
+
+// Сжимаем скриншот; очень длинные (прокрученные) режем на части, чтобы текст оставался читаемым
+async function prepareImages(files) {
+  const out = [];
+  for (const f of files) {
+    const url = URL.createObjectURL(f);
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+    const W = img.naturalWidth, H = img.naturalHeight, tileH = Math.round(W * 2), overlap = Math.round(W * 0.12);
+    const tiles = H > W * 2.4 ? Math.ceil((H - overlap) / (tileH - overlap)) : 1;
+    for (let t = 0; t < tiles; t++) {
+      const y = tiles === 1 ? 0 : Math.min(t * (tileH - overlap), H - tileH), h = tiles === 1 ? H : tileH;
+      const scale = Math.min(1, 1568 / Math.max(W, h));
+      const c = document.createElement('canvas'); c.width = Math.round(W * scale); c.height = Math.round(h * scale);
+      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+      g.drawImage(img, 0, y, W, h, 0, 0, c.width, c.height);
+      out.push(c.toDataURL('image/jpeg', 0.85).split(',')[1]);
+    }
+    URL.revokeObjectURL(url);
+  }
+  return out;
+}
+
+function openImport() {
+  if (!cards.length) { toast('Сначала добавьте карту'); return openCard(null); }
+  if (!meta.ai) return openAiSettings(openImport);
+  const lastImp = [...ops].reverse().find(o => o.k === 'e' || o.k === 'i');
+  let card = lastImp && cards.some(c => c.id === lastImp.f) ? lastImp.f : cards[0].id, files = [];
+  openSheet(`<h2>📷 Скрины из банка</h2>
+    <div class="muted" style="font-size:13.5px;margin:-6px 0 14px">ИИ найдёт на скриншотах операции и разложит их по категориям. Вы всё проверите перед сохранением.</div>
+    <div class="muted" style="font-size:12.5px;margin:0 2px 6px">С какой карты эти операции</div>
+    <div class="chips scroll" id="im-card" style="margin-bottom:14px"></div>
+    <label class="pick" id="im-pick"><span class="big">🖼</span><span>Выбрать скриншоты</span>
+      <span class="muted" style="font-size:12px;font-weight:400">можно несколько, до 10 штук</span>
+      <input type="file" id="im-files" accept="image/*" multiple></label>
+    <div class="shots" id="im-shots"></div>
+    <div class="err" id="im-err"></div>
+    <button class="btn" id="im-go" disabled>Распознать</button>`, () => {
+    const drawCards = () => $('#im-card').innerHTML = cards.map(c =>
+      `<button class="chip ${card === c.id ? 'on' : ''}" data-id="${c.id}">${esc(c.name)}</button>`).join('');
+    drawCards();
+    $('#im-card').onclick = e => { const b = e.target.closest('[data-id]'); if (b) { card = +b.dataset.id; drawCards(); } };
+    $('#im-files').onchange = e => {
+      files = [...e.target.files].slice(0, 10);
+      $('#im-shots').innerHTML = files.map(f => `<img src="${URL.createObjectURL(f)}" alt="">`).join('');
+      $('#im-pick').style.height = files.length ? '56px' : '';
+      $('#im-pick .big').style.display = $('#im-pick span:nth-child(3)').style.display = files.length ? 'none' : '';
+      $('#im-pick').querySelector('span:nth-child(2)').textContent = files.length ? `Выбрано: ${files.length} · заменить` : 'Выбрать скриншоты';
+      $('#im-go').disabled = !files.length;
+    };
+    $('#im-go').onclick = async () => {
+      const sh = $('#sheet');
+      sh.innerHTML = `<div class="grab"></div><div class="spinner"></div>
+        <div style="text-align:center;font-weight:600" id="im-status">Готовлю картинки…</div>
+        <div class="muted" style="text-align:center;font-size:13px;margin:6px 0 30px">Обычно это занимает 5–20 секунд</div>`;
+      try {
+        const imgs = await prepareImages(files);
+        const found = [];
+        for (let i = 0; i < imgs.length; i += 6) {
+          $('#im-status').textContent = imgs.length > 6 ? `ИИ читает скрины… (${Math.min(i + 6, imgs.length)} из ${imgs.length})` : 'ИИ читает скрины…';
+          const r = await fetch(meta.ai, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ initData: (tg && tg.initData) || '', images: imgs.slice(i, i + 6), context: {
+              today: isoDay(new Date()), currency: cardCur(card),
+              expenseCats: [...EXP_CATS.map(c => c[0]), ...meta.cats], incomeCats: [...INC_CATS.map(c => c[0]), ...meta.icats] } }) });
+          const data = await r.json().catch(() => ({ error: 'Посредник вернул непонятный ответ (' + r.status + ')' }));
+          if (!r.ok || data.error) throw new Error(data.error || 'Ошибка ' + r.status);
+          found.push(...data.transactions);
+        }
+        openReview(found, card);
+      } catch (e) {
+        openSheet(`<h2>Не получилось</h2><div class="box" style="background:var(--bg2);box-shadow:none">${esc(e.message || e)}</div>
+          <button class="btn" id="im-retry">Попробовать снова</button>`, () => { $('#im-retry').onclick = openImport; });
+      }
+    };
+  });
+}
+
+function openReview(list, card) {
+  const cur = cardCur(card);
+  const allCats = k => k === 'i' ? [...INC_CATS.map(c => c[0]), ...meta.icats] : [...EXP_CATS.map(c => c[0]), ...meta.cats];
+  // уже ли есть такая операция (та же карта, тип, сумма, ±1 день)
+  const isDup = (k, a, date) => ops.some(o => o.f === card && o.k === k && o.a === a && Math.abs(dayDiff(isoDay(o.t * 1000)) - dayDiff(date)) <= 1);
+  const seen = new Set();
+  const items = list.map(t => {
+    const k = t.type === 'income' ? 'i' : 'e';
+    let a = Math.round(Math.abs(+t.amount || 0) * 100), note = (t.merchant || '').trim().slice(0, 60);
+    const tc = (t.currency || cur).toUpperCase();
+    if (tc !== cur && CURS[tc]) { note += ` (${money(a, false, tc)})`; a = conv(a, tc, cur); }
+    let date = /^\d{4}-\d{2}-\d{2}$/.test(t.date || '') ? t.date : isoDay(new Date());
+    if (dayDiff(date) > 0) date = isoDay(new Date());
+    const c = allCats(k).includes(t.category) ? t.category : 'Другое';
+    const key = [k, a, date, note].join('|');
+    const dupInBatch = seen.has(key); seen.add(key);
+    const dup = isDup(k, a, date);
+    return { k, a, note, date, time: /^\d{1,2}:\d{2}$/.test(t.time || '') ? t.time : '', c, own: !!t.own_transfer, dup, on: a > 0 && !dup && !dupInBatch && !t.own_transfer };
+  }).filter(x => x.a > 0).sort((x, y) => y.date.localeCompare(x.date));
+
+  if (!items.length) {
+    return openSheet(`<h2>Операций не найдено</h2><div class="muted" style="margin-bottom:16px">На скриншотах не удалось найти операции с суммами. Попробуйте скрин списка операций или выписки.</div>
+      <button class="btn" id="im-retry">Загрузить другие</button>`, () => { $('#im-retry').onclick = openImport; });
+  }
+  const draw = () => {
+    const sel = items.filter(x => x.on);
+    const sum = sel.reduce((s, x) => s + (x.k === 'e' ? -x.a : x.a), 0);
+    $('#rv-list').innerHTML = items.map((x, i) => {
+      const ci = catInfo(x.c, x.k);
+      return `<div class="imp ${x.on ? 'on' : 'off'}" data-i="${i}">
+        <button class="chk" data-act="toggle">${x.on ? '✓' : ''}</button>
+        <div class="ic" style="${tint(ci.col)}">${ci.e}</div>
+        <div class="mid"><div class="t1">${esc(x.note || x.c)}</div>
+          <div class="meta">
+            <select data-act="cat">${allCats(x.k).map(c => `<option ${c === x.c ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select>
+            <input type="date" data-act="date" value="${x.date}">
+            ${x.dup ? '<span class="tag">уже есть в учёте</span>' : ''}${x.own ? '<span class="tag">между своими счетами</span>' : ''}
+          </div></div>
+        <button class="amt num ${x.k === 'i' ? 'in' : ''}" data-act="kind" title="Нажмите, чтобы поменять расход/доход">${money(x.k === 'e' ? -x.a : x.a, true, cur)}</button>
+      </div>`;
+    }).join('');
+    $('#rv-save').textContent = sel.length ? `Добавить ${sel.length} ${plural(sel.length, 'операцию', 'операции', 'операций')} · ${money(sum, true, cur)}` : 'Ничего не выбрано';
+    $('#rv-save').disabled = !sel.length;
+  };
+  openSheet(`<h2>Проверьте операции</h2>
+    <div class="muted" style="font-size:13px;margin:-6px 0 8px">Карта: <b>${esc(cardName(card))}</b> · найдено ${items.length}.
+      Нажмите на сумму, чтобы поменять расход ↔ доход. Повторы и переводы между своими счетами отключены.</div>
+    <div id="rv-list"></div>
+    <button class="btn" id="rv-save" style="margin-top:12px;position:sticky;bottom:0"></button>`, () => {
+    draw();
+    $('#rv-list').onclick = e => {
+      const row = e.target.closest('[data-i]'), act = e.target.closest('[data-act]'); if (!row || !act) return;
+      const x = items[+row.dataset.i];
+      if (act.dataset.act === 'toggle') { x.on = !x.on; haptic('tap'); draw(); }
+      if (act.dataset.act === 'kind') { x.k = x.k === 'e' ? 'i' : 'e'; if (!allCats(x.k).includes(x.c)) x.c = 'Другое'; draw(); }
+    };
+    $('#rv-list').onchange = e => {
+      const row = e.target.closest('[data-i]'), act = e.target.dataset.act; if (!row) return;
+      const x = items[+row.dataset.i];
+      if (act === 'cat') x.c = e.target.value;
+      if (act === 'date' && e.target.value) x.date = e.target.value;
+      draw();
+    };
+    $('#rv-save').onclick = async () => {
+      const sel = items.filter(x => x.on); if (!sel.length) return;
+      $('#rv-save').disabled = true;
+      const added = sel.map(x => {
+        const d = new Date(x.date + 'T' + (x.time ? x.time.padStart(5, '0') : '12:00'));
+        return { id: meta.next++, t: Math.floor(d.getTime() / 1000), k: x.k, a: x.a, c: x.c, f: card, to: 0, n: x.note };
+      });
+      ops.push(...added); sortOps();
+      try {
+        await saveOps(Math.min(...added.map(o => ops.indexOf(o))));
+        haptic('success'); closeAll(); render();
+        toast(`Добавлено: ${added.length} · ${cardName(card)}: ${hm(balance(card), cur)}`);
+      } catch (e) { $('#rv-save').disabled = false; toast('Не удалось сохранить, попробуйте ещё раз'); }
+    };
+  });
+}
+const plural = (n, a, b, c) => { const m = n % 10, h = n % 100; return m === 1 && h !== 11 ? a : m >= 2 && m <= 4 && (h < 12 || h > 14) ? b : c; };
+
 /* ================================================================ События */
-const OPEN = { budgets: openBudgets, goals: openGoals, recur: openRecurList, cards: openCardsList, currency: openCurrency, cats: openCats, pin: openPinSettings,
+const OPEN = { budgets: openBudgets, goals: openGoals, recur: openRecurList, cards: openCardsList, currency: openCurrency, cats: openCats, pin: openPinSettings, import: openImport, aiset: openAiSettings,
   hide: async () => { meta.hide = !meta.hide; await saveMeta(); render(); } };
 document.addEventListener('click', e => {
   if (e.target.closest('#sheet')) return;
