@@ -127,6 +127,7 @@
   .field label { display: block; font-size: 13px; color: var(--hint); margin-bottom: 6px; }
   .field input[type=text], .field input[type=date], .field input:not([type]) {
     width: 100%; padding: 11px 12px; border-radius: 12px; border: 0; background: var(--bg2); outline: 0; }
+  #cu-rates input { background: var(--bg) !important; }
   .colors { display: flex; gap: 10px; }
   .colors button { width: 34px; height: 34px; border-radius: 50%; }
   .colors button.on { outline: 3px solid var(--accent); outline-offset: 2px; }
@@ -209,7 +210,12 @@
    В обычном браузере — localStorage, чтобы можно было проверить. */
 const tg = window.Telegram && window.Telegram.WebApp;
 const CLOUD = !!(tg && tg.initData && tg.isVersionAtLeast && tg.isVersionAtLeast('6.9'));
-const CUR = '₸';
+const CURS = {
+  KZT: ['₸', 'Тенге'], RUB: ['₽', 'Рубль'], USD: ['$', 'Доллар'], EUR: ['€', 'Евро'],
+  UZS: ['сўм', 'Сум'], KGS: ['сом', 'Сом'], CNY: ['¥', 'Юань'], TRY: ['₺', 'Лира'],
+  GBP: ['£', 'Фунт'], AED: ['AED', 'Дирхам'], GEL: ['₾', 'Лари'], BYN: ['Br', 'Бел. рубль'],
+};
+const sym = c => (CURS[c] || [c])[0];
 const CHUNK = 45; // операций на один ключ (лимит Telegram — 4096 символов на значение)
 
 const store = {
@@ -242,17 +248,19 @@ const EXP_CATS = [
 const INC_CATS = [['Зарплата','💼'],['Подработка','💸'],['Кэшбэк','🪙'],['Подарок','🎁'],['Другое','📦']];
 const COLORS = ['#f14635','#2f80ed','#1f9d55','#8b5cf6','#f59e0b','#111827','#ec4899','#0ea5a4'];
 
-let meta = { n: 0, next: 1, cats: [], icats: [] };
-let cards = [];  // {id, name, start, color}
-let ops = [];    // {id, t, k:'e'|'i'|'t'|'a', a, c, f, to}
+// rates: сколько единиц валюты за 1 USD
+let meta = { n: 0, next: 1, cats: [], icats: [], base: 'KZT', rates: {}, ratesAt: 0 };
+let cards = [];  // {id, name, start, color, cur}
+let ops = [];    // {id, t, k:'e'|'i'|'t'|'a', a, c, f, to, a2} a2 — сумма зачисления при переводе между валютами
 
-const pack = o => [o.id, o.t, o.k, o.a, o.c || '', o.f || 0, o.to || 0];
-const unpack = r => ({ id: r[0], t: r[1], k: r[2], a: r[3], c: r[4], f: r[5], to: r[6] });
+const pack = o => { const r = [o.id, o.t, o.k, o.a, o.c || '', o.f || 0, o.to || 0]; if (o.a2 != null) r.push(o.a2); return r; };
+const unpack = r => ({ id: r[0], t: r[1], k: r[2], a: r[3], c: r[4], f: r[5], to: r[6], a2: r[7] });
 
 async function load() {
   const base = await store.get(['meta', 'cards']);
   if (base.meta) meta = Object.assign(meta, JSON.parse(base.meta));
   if (base.cards) cards = JSON.parse(base.cards);
+  cards.forEach(c => { c.cur = c.cur || 'KZT'; });
   const keys = Array.from({ length: meta.n }, (_, i) => 'o' + i);
   const chunks = await store.get(keys);
   ops = [];
@@ -297,20 +305,45 @@ function balance(cardId) {
     if (o.k === 'e' && o.f === cardId) b -= o.a;
     else if (o.k === 'i' && o.f === cardId) b += o.a;
     else if (o.k === 'a' && o.f === cardId) b += o.a;
-    else if (o.k === 't') { if (o.f === cardId) b -= o.a; if (o.to === cardId) b += o.a; }
+    else if (o.k === 't') { if (o.f === cardId) b -= o.a; if (o.to === cardId) b += (o.a2 != null ? o.a2 : o.a); }
   }
   return b;
+}
+
+/* ============================================================ Валюты */
+const cardCur = id => (cards.find(c => c.id === id) || { cur: meta.base }).cur;
+const hasRate = c => c === 'USD' || !!meta.rates[c];
+function conv(v, from, to = meta.base) {
+  if (from === to) return v;
+  const r = Object.assign({ USD: 1 }, meta.rates);
+  if (!r[from] || !r[to]) return v;
+  return Math.round(v / r[from] * r[to]);
+}
+const opBase = o => conv(o.a, cardCur(o.f));   // сумма операции в основной валюте
+
+async function refreshRates(force) {
+  if (!force && Date.now() - meta.ratesAt < 6 * 3600e3) return false;
+  try {
+    const r = await fetch('https://open.er-api.com/v6/latest/USD').then(x => x.json());
+    if (r.result !== 'success') throw 0;
+    meta.rates = {};
+    Object.keys(CURS).forEach(k => { if (r.rates[k]) meta.rates[k] = r.rates[k]; });
+    meta.ratesAt = Date.now();
+    await saveMeta();
+    return true;
+  } catch (e) { return false; }
 }
 
 /* ============================================================ Утилиты */
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-function money(v, sign) {
+function money(v, sign, cur = meta.base) {
   const neg = v < 0; v = Math.abs(v);
   let s = Math.floor(v / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   if (v % 100) s += ',' + String(v % 100).padStart(2, '0');
-  return (neg ? '−' : sign && v ? '+' : '') + s + ' ' + CUR;
+  return (neg ? '−' : sign && v ? '+' : '') + s + ' ' + sym(cur);
 }
+const cmoney = (v, cardId, sign) => money(v, sign, cardCur(cardId)); // в валюте карты
 function parseMoney(s) {
   s = String(s).replace(/[\s  ]/g, '').replace(',', '.');
   if (!/^\d+(\.\d{0,2})?$/.test(s)) return null;
@@ -343,10 +376,11 @@ let page = 'home', statMonth = null, histCard = 0;
 
 function opRow(o) {
   let ic, t1, t2, amt, cls = '';
-  if (o.k === 'e') { ic = icon(o.c, 'e'); t1 = o.c; t2 = cardName(o.f); amt = money(-o.a); }
-  else if (o.k === 'i') { ic = icon(o.c, 'i'); t1 = o.c; t2 = cardName(o.f); amt = money(o.a, true); cls = 'in'; }
-  else if (o.k === 't') { ic = '🔁'; t1 = 'Перевод'; t2 = cardName(o.f) + ' → ' + cardName(o.to); amt = money(o.a); }
-  else { ic = '✏️'; t1 = 'Корректировка'; t2 = cardName(o.f); amt = money(o.a, true); cls = o.a > 0 ? 'in' : ''; }
+  if (o.k === 'e') { ic = icon(o.c, 'e'); t1 = o.c; t2 = cardName(o.f); amt = cmoney(-o.a, o.f); }
+  else if (o.k === 'i') { ic = icon(o.c, 'i'); t1 = o.c; t2 = cardName(o.f); amt = cmoney(o.a, o.f, true); cls = 'in'; }
+  else if (o.k === 't') { ic = '🔁'; t1 = 'Перевод'; t2 = cardName(o.f) + ' → ' + cardName(o.to);
+    amt = cmoney(o.a, o.f) + (o.a2 != null && cardCur(o.to) !== cardCur(o.f) ? ' → ' + cmoney(o.a2, o.to) : ''); }
+  else { ic = '✏️'; t1 = 'Корректировка'; t2 = cardName(o.f); amt = cmoney(o.a, o.f, true); cls = o.a > 0 ? 'in' : ''; }
   const time = new Date(o.t * 1000).toTimeString().slice(0, 5);
   return `<button class="op" data-op="${o.id}"><div class="ic">${ic}</div>
     <div class="mid"><div class="t1">${esc(t1)}</div><div class="t2">${esc(t2)} · ${time}</div></div>
@@ -354,14 +388,14 @@ function opRow(o) {
 }
 
 function renderHome() {
-  $('#total').textContent = money(cards.reduce((s, c) => s + balance(c.id), 0));
+  $('#total').textContent = money(cards.reduce((s, c) => s + conv(balance(c.id), c.cur), 0));
   const cur = ym(Date.now() / 1000);
   let out = 0, inc = 0;
-  ops.forEach(o => { if (ym(o.t) === cur) { if (o.k === 'e') out += o.a; if (o.k === 'i') inc += o.a; } });
+  ops.forEach(o => { if (ym(o.t) === cur) { if (o.k === 'e') out += opBase(o); if (o.k === 'i') inc += opBase(o); } });
   $('#m-out').textContent = money(out); $('#m-in').textContent = money(inc);
   $('#cards').innerHTML = cards.map(c =>
     `<button class="card" data-card="${c.id}" style="background:linear-gradient(135deg, ${c.color}, ${c.color}cc)">
-      <div class="cn">${esc(c.name)}</div><div class="cb num">${money(balance(c.id))}</div></button>`).join('')
+      <div class="cn">${esc(c.name)}</div><div class="cb num">${money(balance(c.id), false, c.cur)}</div></button>`).join('')
     + `<button class="card add" id="add-card">＋ Карта</button>`;
   const recent = ops.slice(-8).reverse();
   $('#recent').innerHTML = recent.length ? recent.map(opRow).join('')
@@ -376,7 +410,7 @@ function renderHistory() {
   let html = '', curDay = null, group = [];
   const flush = () => {
     if (!group.length) return;
-    const spent = group.filter(o => o.k === 'e').reduce((s, o) => s + o.a, 0);
+    const spent = group.filter(o => o.k === 'e').reduce((s, o) => s + opBase(o), 0);
     html += `<div class="day"><span>${dayLabel(group[0].t)}</span><span class="num">${spent ? money(-spent) : ''}</span></div>
       <div class="section" style="padding:4px 14px">${group.map(opRow).join('')}</div>`;
     group = [];
@@ -394,8 +428,8 @@ function renderStats() {
   if (statMonth === null) statMonth = ym(Date.now() / 1000);
   $('#m-title').textContent = MONTHS[statMonth % 12] + ' ' + Math.floor(statMonth / 12);
   const m = ops.filter(o => ym(o.t) === statMonth);
-  const out = m.filter(o => o.k === 'e').reduce((s, o) => s + o.a, 0);
-  const inc = m.filter(o => o.k === 'i').reduce((s, o) => s + o.a, 0);
+  const out = m.filter(o => o.k === 'e').reduce((s, o) => s + opBase(o), 0);
+  const inc = m.filter(o => o.k === 'i').reduce((s, o) => s + opBase(o), 0);
   $('#s-out').textContent = money(out); $('#s-in').textContent = money(inc);
   $('#s-diff').textContent = money(inc - out, true);
   $('#s-diff').style.color = inc - out < 0 ? 'var(--danger)' : 'var(--good)';
@@ -411,8 +445,8 @@ function renderStats() {
   };
   const byCat = {}, byCard = {};
   m.filter(o => o.k === 'e').forEach(o => {
-    byCat[o.c] = (byCat[o.c] || 0) + o.a;
-    const n = cardName(o.f); byCard[n] = (byCard[n] || 0) + o.a;
+    const v = opBase(o); byCat[o.c] = (byCat[o.c] || 0) + v;
+    const n = cardName(o.f); byCard[n] = (byCard[n] || 0) + v;
   });
   $('#s-cats').innerHTML = bars(byCat, true);
   $('#s-cards').innerHTML = bars(byCard, false);
@@ -451,11 +485,12 @@ function openAdd(kind = 'e') {
     <div class="seg" id="a-seg">
       <button data-k="e">Расход</button><button data-k="i">Доход</button><button data-k="t">Перевод</button>
     </div>
-    <div class="bigamt"><input id="a-amt" inputmode="decimal" placeholder="0" autocomplete="off"><span>${CUR}</span></div>
+    <div class="bigamt"><input id="a-amt" inputmode="decimal" placeholder="0" autocomplete="off"><span id="a-sym"></span></div>
     <div class="field" id="a-cat-f"><label>Категория</label><div class="chips" id="a-cats"></div>
       <input type="text" id="a-newcat" maxlength="24" placeholder="Название категории" style="display:none;margin-top:8px"></div>
     <div class="field"><label id="a-from-l">Карта</label><div class="chips" id="a-from"></div></div>
     <div class="field" id="a-to-f"><label>На карту</label><div class="chips" id="a-to"></div></div>
+    <div class="field" id="a-a2-f"><label id="a-a2-l">Будет зачислено</label><input type="text" id="a-a2" inputmode="decimal" placeholder="0"></div>
     <div class="field"><label>Дата</label><input type="date" id="a-date" value="${today.toISOString().slice(0, 10)}"></div>
     <div class="err" id="a-err"></div>
     <button class="btn" id="a-save">Сохранить</button>`, s => {
@@ -468,8 +503,18 @@ function openAdd(kind = 'e') {
         `<button class="chip ${st.c === n ? 'on' : ''}" data-cat="${esc(n)}">${i} ${esc(n)}</button>`).join('')
         + `<button class="chip" data-cat="__new">＋ Своя</button>`;
       const chips = (sel) => cards.map(c =>
-        `<button class="chip ${sel === c.id ? 'on' : ''}" data-id="${c.id}">${esc(c.name)} · <span class="num">${money(balance(c.id))}</span></button>`).join('');
+        `<button class="chip ${sel === c.id ? 'on' : ''}" data-id="${c.id}">${esc(c.name)} · <span class="num">${money(balance(c.id), false, c.cur)}</span></button>`).join('');
       $('#a-from').innerHTML = chips(st.f); $('#a-to').innerHTML = chips(st.to);
+      $('#a-sym').textContent = sym(cardCur(st.f));
+      const fx = st.k === 't' && cardCur(st.f) !== cardCur(st.to);
+      $('#a-a2-f').style.display = fx ? '' : 'none';
+      if (fx) {
+        $('#a-a2-l').textContent = `Будет зачислено, ${sym(cardCur(st.to))}`;
+        if (!st.a2edited) {
+          const a = parseMoney($('#a-amt').value);
+          $('#a-a2').value = a ? (conv(a, cardCur(st.f), cardCur(st.to)) / 100).toFixed(2).replace(/\.00$/, '').replace('.', ',') : '';
+        }
+      }
     };
     draw();
     s.querySelector('#a-seg').onclick = e => { const k = e.target.dataset.k; if (k) { st.k = k; st.c = null; $('#a-newcat').style.display = 'none'; draw(); } };
@@ -480,9 +525,11 @@ function openAdd(kind = 'e') {
       if (c === '__new') { st.c = null; draw(); inp.style.display = ''; inp.value = ''; inp.focus(); return; }
       inp.style.display = 'none'; st.c = c; draw();
     };
+    $('#a-amt').oninput = () => { if (st.k === 't') draw(); };
+    $('#a-a2').oninput = () => { st.a2edited = true; };
     $('#a-newcat').oninput = e => { st.c = e.target.value.trim() || null; draw(); };
-    $('#a-from').onclick = e => { const b = e.target.closest('[data-id]'); if (b) { st.f = +b.dataset.id; draw(); } };
-    $('#a-to').onclick = e => { const b = e.target.closest('[data-id]'); if (b) { st.to = +b.dataset.id; draw(); } };
+    $('#a-from').onclick = e => { const b = e.target.closest('[data-id]'); if (b) { st.f = +b.dataset.id; st.a2edited = false; draw(); } };
+    $('#a-to').onclick = e => { const b = e.target.closest('[data-id]'); if (b) { st.to = +b.dataset.id; st.a2edited = false; draw(); } };
     setTimeout(() => $('#a-amt').focus(), 280);
     $('#a-save').onclick = async () => {
       const a = parseMoney($('#a-amt').value);
@@ -490,6 +537,11 @@ function openAdd(kind = 'e') {
       if (!a) return err('Введите сумму');
       if (st.k !== 't' && !st.c) return err('Выберите категорию');
       if (st.k === 't' && st.f === st.to) return err('Выберите две разные карты');
+      let a2 = null;
+      if (st.k === 't' && cardCur(st.f) !== cardCur(st.to)) {
+        a2 = parseMoney($('#a-a2').value);
+        if (!a2) return err('Укажите, сколько будет зачислено');
+      }
       // Время: выбранная дата + текущее время суток
       const now = new Date(), d = new Date($('#a-date').value + 'T00:00');
       if (isNaN(d)) return err('Неверная дата');
@@ -501,9 +553,9 @@ function openAdd(kind = 'e') {
         } else if (st.k !== 't') {
           st.c = cats().find(x => x[0].toLowerCase() === st.c.toLowerCase())[0];
         }
-        await addOp({ t: Math.floor(d.getTime() / 1000), k: st.k, a, c: st.k === 't' ? '' : st.c, f: st.f, to: st.k === 't' ? st.to : 0 });
+        await addOp({ t: Math.floor(d.getTime() / 1000), k: st.k, a, c: st.k === 't' ? '' : st.c, f: st.f, to: st.k === 't' ? st.to : 0, a2 });
         haptic('success'); closeSheet(); render();
-        toast(st.k === 't' ? 'Перевод сохранён' : `${cardName(st.f)}: ${money(balance(st.f))}`);
+        toast(st.k === 't' ? 'Перевод сохранён' : `${cardName(st.f)}: ${cmoney(balance(st.f), st.f)}`);
       } catch (e) { $('#a-save').disabled = false; err('Не удалось сохранить, попробуйте ещё раз'); }
     };
   });
@@ -517,6 +569,7 @@ function openCard(id) {
     <div class="field"><label>Название</label><input type="text" id="c-name" maxlength="24" placeholder="Kaspi Gold" value="${c ? esc(c.name) : ''}"></div>
     <div class="field"><label>${c ? 'Сейчас на карте' : 'Текущий баланс'}</label>
       <input type="text" id="c-bal" inputmode="decimal" placeholder="0" value="${c ? (balance(c.id) / 100).toString().replace('.', ',') : ''}"></div>
+    <div class="field"><label>Валюта${c ? '' : ''}</label><div class="chips" id="c-cur"></div></div>
     <div class="field"><label>Цвет</label><div class="colors" id="c-colors"></div></div>
     <div class="err" id="c-err"></div>
     <button class="btn" id="c-save">Сохранить</button>
@@ -524,6 +577,12 @@ function openCard(id) {
     const drawC = () => $('#c-colors').innerHTML = COLORS.map(x =>
       `<button style="background:${x}" class="${x === color ? 'on' : ''}" data-color="${x}"></button>`).join('');
     drawC();
+    let ccur = c ? c.cur : meta.base;
+    const drawCur = () => $('#c-cur').innerHTML = (c ? [ccur] : Object.keys(CURS)).map(k =>
+      `<button class="chip ${k === ccur ? 'on' : ''}" data-cur="${k}">${sym(k)} ${CURS[k][1]}</button>`).join('')
+      + (c ? '<div style="color:var(--hint);font-size:12.5px;align-self:center">валюту карты менять нельзя</div>' : '');
+    drawCur();
+    $('#c-cur').onclick = e => { const b = e.target.closest('[data-cur]'); if (b && !c) { ccur = b.dataset.cur; drawCur(); } };
     $('#c-colors').onclick = e => { if (e.target.dataset.color) { color = e.target.dataset.color; drawC(); } };
     if (!c) setTimeout(() => $('#c-name').focus(), 280);
     $('#c-save').onclick = async () => {
@@ -539,7 +598,8 @@ function openCard(id) {
         const diff = bal - balance(c.id);
         if (diff) await addOp({ t: Math.floor(Date.now() / 1000), k: 'a', a: diff, c: '', f: c.id, to: 0 });
       } else {
-        cards.push({ id: meta.next++, name, start: bal, color });
+        cards.push({ id: meta.next++, name, start: bal, color, cur: ccur });
+        if (!hasRate(ccur) || ccur !== meta.base) refreshRates();
         await saveMeta();
       }
       await saveCards();
@@ -553,13 +613,67 @@ function openCard(id) {
   });
 }
 
+function openCurrency() {
+  const used = [...new Set(cards.map(c => c.cur))];
+  let base = meta.base;
+  const R = () => Object.assign({ USD: 1 }, meta.rates);
+  const rateStr = c => { const r = R(); if (!r[c] || !r[base]) return '';
+    const x = r[base] / r[c]; return (+x.toPrecision(x >= 1 ? 6 : 4)).toString().replace('.', ','); };
+  const ratesHtml = () => {
+    const others = used.filter(c => c !== base);
+    if (!others.length) return '<div class="empty" style="padding:6px 0">Все карты в основной валюте — курсы не нужны</div>';
+    return others.map(c => `<div class="field"><label>1 ${sym(c)} (${CURS[c][1]}) =</label>
+      <input type="text" inputmode="decimal" data-rate="${c}" value="${rateStr(c)}" placeholder="курс в ${sym(base)}"></div>`).join('');
+  };
+  openSheet(`<h2>Валюта</h2>
+    <div class="field"><label>Основная валюта — в ней считаются общий баланс и статистика</label>
+      <div class="chips" id="cu-base"></div></div>
+    <div class="section" style="background:var(--bg2);padding:12px 14px 2px">
+      <h3>Курсы <span id="cu-at" style="text-transform:none;letter-spacing:0;font-weight:400"></span></h3>
+      <div id="cu-rates"></div></div>
+    <div class="err" id="cu-err"></div>
+    <button class="btn" id="cu-save">Сохранить</button>
+    <button class="btn ghost" id="cu-upd" style="margin-top:8px;color:var(--text)">🔄 Обновить курсы из интернета</button>`, () => {
+    const draw = () => {
+      $('#cu-base').innerHTML = Object.keys(CURS).map(k =>
+        `<button class="chip ${k === base ? 'on' : ''}" data-cur="${k}">${sym(k)} ${CURS[k][1]}</button>`).join('');
+      $('#cu-rates').innerHTML = ratesHtml();
+      $('#cu-at').textContent = meta.ratesAt ? '· обновлены ' + new Date(meta.ratesAt).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+    };
+    draw();
+    $('#cu-base').onclick = e => { const b = e.target.closest('[data-cur]'); if (b) { base = b.dataset.cur; draw(); } };
+    $('#cu-upd').onclick = async () => {
+      $('#cu-upd').disabled = true;
+      const ok = await refreshRates(true);
+      $('#cu-upd').disabled = false;
+      draw(); toast(ok ? 'Курсы обновлены' : 'Нет связи — введите курс вручную');
+    };
+    $('#cu-save').onclick = async () => {
+      // Ручные курсы: 1 ед. валюты = X основной валюты  →  rate[c] = rate[base] / X
+      const r = Object.assign({ USD: 1 }, meta.rates);
+      if (!r[base]) r[base] = 1;  // нет курсов вообще — считаем от основной
+      for (const inp of document.querySelectorAll('[data-rate]')) {
+        const v = inp.value.trim();
+        if (!v || v === rateStr(inp.dataset.rate)) continue;
+        const x = parseFloat(v.replace(/\s/g, '').replace(',', '.'));
+        if (!(x > 0)) return ($('#cu-err').textContent = 'Неверный курс: ' + CURS[inp.dataset.rate][1]);
+        r[inp.dataset.rate] = r[base] / x;
+      }
+      meta.rates = r; meta.base = base;
+      await saveMeta(); haptic('success'); closeSheet(); render();
+    };
+  });
+}
+
 function openCardsList() {
   openSheet(`<h2>Карты</h2><div id="cl"></div>
-    <button class="btn" id="cl-add" style="margin-top:12px">＋ Добавить карту</button>`, () => {
+    <button class="btn" id="cl-add" style="margin-top:12px">＋ Добавить карту</button>
+    <button class="btn ghost" id="cl-cur" style="margin-top:8px;color:var(--text)">💱 Основная валюта и курсы</button>`, () => {
+    $('#cl-cur').onclick = openCurrency;
     $('#cl').innerHTML = cards.length ? cards.map(c => `<button class="op" data-card="${c.id}">
       <div class="ic" style="background:${c.color};color:#fff">💳</div>
       <div class="mid"><div class="t1">${esc(c.name)}</div></div>
-      <div class="amt num">${money(balance(c.id))}</div></button>`).join('') : '<div class="empty">Карт пока нет</div>';
+      <div class="amt num">${money(balance(c.id), false, c.cur)}</div></button>`).join('') : '<div class="empty">Карт пока нет</div>';
     $('#cl').onclick = e => { const b = e.target.closest('[data-card]'); if (b) openCard(+b.dataset.card); };
     $('#cl-add').onclick = () => openCard();
   });
@@ -586,6 +700,7 @@ document.addEventListener('click', e => {
 });
 $('#btn-add').onclick = () => openAdd();
 $('#btn-cards').onclick = openCardsList;
+$('#total').onclick = openCurrency;
 $('#backdrop').onclick = closeSheet;
 $('#m-prev').onclick = () => { statMonth--; renderStats(); };
 $('#m-next').onclick = () => { statMonth++; renderStats(); };
@@ -596,6 +711,7 @@ if (tg && tg.BackButton) tg.BackButton.onClick(closeSheet);
   try { await load(); } catch (e) { $('#loading').textContent = 'Не удалось загрузить данные: ' + e; return; }
   $('#loading').remove();
   render();
+  if (cards.some(c => c.cur !== meta.base) || meta.ratesAt) { if (await refreshRates()) render(); }
 })();
 </script>
 </body>
