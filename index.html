@@ -8,19 +8,19 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
 <style>
   :root {
-    --bg: #14161e;          /* поверхность карточек */
-    --bg2: #0a0b10;         /* фон страницы */
-    --field: #1d2029;       /* поля, чипы, кнопки клавиатуры */
-    --text: #f4f5f8;
-    --hint: #8a8fa3;
-    --accent: #2ee6c5;
-    --accent-text: #03241e;
-    --danger: #ff6b6b;
-    --warn: #fbbf24;
-    --good: #4ade80;
-    --line: rgba(255,255,255,.07);
-    --soft: rgba(46,230,197,.12);
-    --r: 22px;
+    --bg: #17171a;          /* карточки */
+    --bg2: #0e0e10;         /* фон */
+    --field: #1f1f23;       /* поля, чипы, клавиши */
+    --text: #ececef;
+    --hint: #8a8a93;
+    --accent: #f2f2f4;      /* главный акцент — белый */
+    --accent-text: #0e0e10;
+    --danger: #e5605f;
+    --warn: #d9a93f;
+    --good: #4fbf7f;
+    --line: #232327;
+    --soft: #222226;
+    --r: 18px;
     --shadow: none;
     color-scheme: dark;
   }
@@ -312,87 +312,103 @@
   .tag { font-size: 11.5px; font-weight: 600; padding: 3px 7px; border-radius: 7px; background: color-mix(in srgb, var(--warn) 18%, transparent);
     color: color-mix(in srgb, var(--warn) 70%, var(--text)); }
 
-  /* ================= Тёмный премиум ================= */
+  /* ================= Строгий трекер ================= */
   html, body { background: var(--bg2); }
-  body { background: radial-gradient(520px 340px at 85% -120px, rgba(46,230,197,.13), transparent 70%),
-                     radial-gradient(420px 300px at -10% 30%, rgba(99,102,241,.07), transparent 70%), var(--bg2);
-         background-attachment: fixed; }
-  .box { border: 1px solid var(--line); }
-  .iconbtn { background: var(--bg); border: 1px solid var(--line); font-size: 20px; color: var(--text); }
-  .hello b { font-weight: 700; }
-  .hero { background: radial-gradient(140% 120% at 100% 0%, rgba(46,230,197,.22), transparent 55%),
-                      linear-gradient(180deg, #181b25, #12141b); border: 1px solid rgba(255,255,255,.09);
-          box-shadow: 0 20px 40px -20px rgba(46,230,197,.25); color: var(--text); }
-  .hero::after { background: rgba(46,230,197,.08); filter: blur(30px); width: 220px; height: 220px; right: -60px; bottom: -90px; }
-  .hero .lbl { color: var(--hint); opacity: 1; }
-  .hero .total { font-size: 40px; font-weight: 750; margin: 4px 0 6px; }
-  .hero .today { font-size: 13.5px; color: var(--accent); font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
-  .hero .today.over { color: var(--danger); }
-  .pill { background: rgba(255,255,255,.04); border: 1px solid var(--line); backdrop-filter: none; }
-  .pill .pl { color: var(--hint); opacity: 1; }
-  .pill .pl i { font-size: 14px; }
-  .pill .pv { font-size: 16px; }
-  .hero .saved { color: var(--hint); opacity: 1; display: flex; align-items: center; gap: 6px; }
-  .qa { color: var(--hint); font-weight: 500; }
-  .qa span { background: var(--bg); border: 1px solid var(--line); color: var(--accent); font-size: 23px; border-radius: 18px; }
-  .card { background: radial-gradient(130% 130% at 100% 0%, color-mix(in srgb, var(--c) 55%, transparent), transparent 62%), #1a1d27;
-          border: 1px solid rgba(255,255,255,.08); box-shadow: none; }
-  .card::before { background: color-mix(in srgb, var(--c) 30%, transparent); filter: blur(24px); }
-  .card .cn { opacity: 1; }
-  .card .cc { opacity: .6; }
-  .card.add { background: transparent; border: 1.5px dashed rgba(255,255,255,.14); color: var(--accent); }
-  .ic { background: var(--field); color: var(--text); font-size: 21px; }
-  .ic i, .cat .ic i { line-height: 1; }
-  .op .t1, .due .t1, .brow .nm { font-weight: 550; }
+  .page { padding-top: 14px; }
+  .box { border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; margin-bottom: 10px; }
+  .ptitle { font-size: 24px; font-weight: 700; letter-spacing: -.02em; margin: 2px 2px 14px; display: flex; justify-content: space-between; align-items: center; }
+  .ptitle .sm { display: block; font-size: 13px; color: var(--hint); font-weight: 400; letter-spacing: 0; margin-bottom: 1px; }
+  .lbl { font-size: 12px; color: var(--hint); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+  .row2 { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .t2 { font-size: 12.5px; color: var(--hint); }
+  .good { color: var(--good); } .bad { color: var(--danger); }
+  .hbtn { width: 38px; height: 38px; display: grid; place-items: center; font-size: 22px; color: #a0a0a8; border-radius: 12px; }
+  .hbtn:active { background: var(--field); }
+  .big { font-size: 36px; font-weight: 650; letter-spacing: -.02em; margin: 4px 0 2px; }
+  .note { font-size: 13px; }
+  .note .link { color: var(--text); text-decoration: underline; text-underline-offset: 3px; font-size: 13px; }
+  .pace svg { display: block; width: 100%; height: 110px; margin-top: 12px; overflow: visible; }
+  .pace .axis { margin-top: 4px; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .tiles .box { margin: 0; }
+  .tiles .v { font-size: 21px; font-weight: 650; margin: 4px 0 1px; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .head { margin: 18px 2px 8px; } .head h2 { font-size: 17px; }
+  .head .link { color: var(--hint); font-weight: 500; }
+  .ic { width: 38px; height: 38px; border-radius: 11px; background: var(--field); color: var(--text); font-size: 19px; }
+  .op { padding: 10px 0; } .op + .op, .due + .due, .brow + .brow, .goal + .goal { border-top-color: var(--line); }
+  .op .t1, .due .t1 { font-weight: 500; }
+  .op .amt { font-weight: 600; }
   .amt.in { color: var(--good); }
-  .chip { background: var(--field); }
-  .page .chip { background: var(--bg); border: 1px solid var(--line); box-shadow: none; }
-  .chip.on, .page .chip.on { background: var(--accent); color: var(--accent-text); border-color: transparent; }
-  .search { background: var(--bg); border: 1px solid var(--line); }
+  .day { margin: 16px 4px 6px; } .day span:first-child { text-transform: uppercase; letter-spacing: .06em; font-size: 12px; }
+  .chip { background: var(--field); font-size: 13.5px; padding: 7px 12px; border-radius: 10px; }
+  .page .chip { background: var(--field); border: 0; box-shadow: none; }
+  .chip.on, .page .chip.on { background: var(--accent); color: var(--accent-text); font-weight: 600; }
+  .search { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; box-shadow: none; }
   .search .muted { font-size: 18px; display: flex; }
-  .seg { background: var(--field); }
-  .seg button.on { background: #2a2e3b; color: var(--text); box-shadow: none; }
-  .monthbar button { background: var(--bg); border: 1px solid var(--line); color: var(--text); }
-  .track { background: rgba(255,255,255,.06); }
-  .menu .mi .ic { color: var(--accent); }
-  .switch { background: #2a2e3b; }
-  nav { background: rgba(20,22,30,.82); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.5); }
-  nav button .ni { font-size: 23px; filter: none; opacity: .55; }
-  nav button.on { color: var(--accent); }
-  nav button.on .ni { opacity: 1; }
-  nav .plus span { background: var(--accent); color: var(--accent-text); box-shadow: 0 6px 22px rgba(46,230,197,.35); font-size: 26px; }
+  .seg { background: var(--field); border-radius: 11px; padding: 2px; }
+  .seg button { font-size: 13.5px; padding: 7px 4px; border-radius: 9px; }
+  .seg button.on { background: #2e2e33; color: var(--text); box-shadow: none; }
+  .monthbar button { background: var(--bg); border: 1px solid var(--line); box-shadow: none; color: var(--text); width: 38px; height: 38px; border-radius: 12px; }
+  .monthbar .mt { font-size: 17px; }
+  .track { background: #26262b; height: 6px; border-radius: 3px; }
+  .track.big { height: 8px; margin: 10px 0 6px; }
+  .fill { background: var(--accent); }
+  .brow .r1 { margin-bottom: 9px; }
+  .brow .nm .t1 { font-weight: 500; }
+  .brow .vl { font-weight: 600; }
+  .tag { font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 6px; margin-left: 4px; vertical-align: 1px; }
+  .tag.bad { background: rgba(229,96,95,.16); color: #ff8a8a; } .tag.warn { background: rgba(217,169,63,.16); color: #e8c26a; }
+  .menu .mi .ic { color: var(--text); }
+  .menu .mi .ar { font-size: 18px; }
+  .switch { background: #2e2e33; } .switch.on { background: var(--good); }
+  .small-btn { background: var(--field); color: var(--text); border-radius: 10px; font-weight: 600; }
+  .delta { border-radius: 6px; font-size: 12.5px; }
+  .delta.up { background: rgba(229,96,95,.14); } .delta.down { background: rgba(79,191,127,.14); }
+  .bigstat { font-size: 32px; font-weight: 650; }
+  .chart .tip { background: #2e2e33; color: var(--text); }
+  nav { left: 0; right: 0; bottom: 0; border-radius: 0; background: rgba(14,14,16,.94); border: 0; border-top: 1px solid #1f1f23;
+        box-shadow: none; padding: 6px 8px calc(8px + env(safe-area-inset-bottom)); backdrop-filter: blur(12px); }
+  nav button { font-size: 10.5px; color: #6b6b74; }
+  nav button .ni { font-size: 23px; filter: none; opacity: 1; }
+  nav button.on { color: var(--text); }
+  nav .plus span { width: 44px; height: 44px; border-radius: 14px; background: var(--accent); color: var(--accent-text); box-shadow: none; font-size: 24px; margin-top: 0; }
+  body { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
   .backdrop { background: rgba(0,0,0,.6); }
-  .sheet { background: #14161e; border-top: 1px solid var(--line); }
-  .grab { background: rgba(255,255,255,.15); }
-  .inp, .field input[type=date] { background: var(--field); color-scheme: dark; }
-  .datebtn { background: var(--field); display: flex; align-items: center; gap: 6px; }
-  .keypad button { background: var(--field); }
-  .keypad button:active { background: #2a2e3b; }
-  .keypad .op { background: var(--soft); color: var(--accent); }
-  .btn { box-shadow: 0 8px 22px -10px rgba(46,230,197,.6); }
-  .btn.sec, .btn.del { box-shadow: none; background: var(--field); }
-  .btn.del { color: var(--danger); }
-  .small-btn { background: var(--soft); color: var(--accent); }
-  .toast { background: #22252f; border: 1px solid var(--line); }
-  .delta.up { background: rgba(255,107,107,.13); } .delta.down { background: rgba(74,222,128,.13); }
-  .chart .tip { background: #2a2e3b; color: var(--text); }
-  .lock { background: radial-gradient(500px 360px at 80% -60px, rgba(46,230,197,.20), transparent 70%), #0a0b10; }
-  .lock .logo { background: var(--soft); color: var(--accent); font-size: 34px; border: 1px solid rgba(46,230,197,.25); }
+  .sheet { background: #141417; border-top: 1px solid var(--line); border-radius: 22px 22px 0 0; }
+  .grab { background: #3a3a40; }
+  .inp, .field input[type=date] { background: var(--field); color-scheme: dark; border-radius: 12px; }
+  .inp:focus { box-shadow: 0 0 0 1.5px var(--accent) inset; }
+  .btn { background: var(--accent); color: var(--accent-text); border-radius: 14px; box-shadow: none; font-weight: 600; }
+  .btn.sec { background: var(--field); color: var(--text); }
+  .btn.del { background: var(--field); color: var(--danger); }
+  .amtbox .val { font-weight: 650; font-size: 44px; }
+  .cats { gap: 8px; grid-template-rows: repeat(2, auto); }
+  .cat { width: 76px; padding: 10px 0 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; gap: 5px; }
+  .cat .ic { width: auto; height: auto; background: none !important; font-size: 21px; border-radius: 0; }
+  .cat span:last-child { font-size: 11.5px; }
+  .cat.on { background: #1f1f23; border: 1.5px solid var(--accent); }
+  .cat.on .ic { outline: 0; }
+  .datebtn { background: var(--field); display: flex; align-items: center; gap: 6px; border-radius: 12px; }
+  .keypad button { background: var(--field); border-radius: 12px; font-weight: 400; height: 48px; }
+  .keypad button:active { background: #2e2e33; }
+  .keypad .op { background: var(--field); color: var(--hint); }
+  .toast { background: #26262b; border: 1px solid #303036; }
+  .lock { background: var(--bg2); color: var(--text); }
+  .lock .logo { background: var(--bg); border: 1px solid var(--line); color: var(--text); font-size: 32px; border-radius: 20px; }
   .lock .ls { color: var(--hint); opacity: 1; }
-  .dots i { border-color: rgba(255,255,255,.35); }
-  .dots i.on { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 12px rgba(46,230,197,.6); }
-  .pinpad button { background: rgba(255,255,255,.06); border: 1px solid var(--line); font-weight: 400; }
-  .pinpad button:active { background: rgba(46,230,197,.18); }
+  .dots i { border-color: #4a4a52; } .dots i.on { background: var(--accent); border-color: var(--accent); box-shadow: none; }
+  .pinpad button { background: var(--bg); border: 1px solid var(--line); font-weight: 400; color: var(--text); }
+  .pinpad button:active { background: #26262b; }
   .pinpad button.ghost { border: 0; background: none; color: var(--hint); }
   .lock .forgot { color: var(--hint); opacity: 1; }
   .imp select, .imp input[type=date], .imp .amt { background: var(--field); color-scheme: dark; }
   .imp.on .chk { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
-  .pick { border-color: rgba(255,255,255,.14); }
-  .pick .big { font-size: 32px; }
-  .emojis button { background: var(--field); color: var(--text); font-size: 22px; }
-  .emojis button.on { background: var(--soft); color: var(--accent); outline-color: var(--accent); }
-  .cta .ic { color: var(--accent); }
-  .page { animation: fade .25s ease; }
+  .pick { border-color: #3a3a40; color: var(--text); }
+  .emojis button { background: var(--field); color: var(--text); }
+  .emojis button.on { background: #2e2e33; color: var(--text); outline: 1.5px solid var(--accent); }
+  .colors button.on { outline-color: var(--accent); }
+  .cta .ic { color: var(--text); }
+  .acc-add { color: var(--hint); }
 </style>
 </head>
 <body>
@@ -401,40 +417,27 @@
 
 <!-- ============ Главная ============ -->
 <section class="page" id="p-home">
-  <div class="top">
-    <div class="hello" id="hello"></div>
-    <div style="display:flex;gap:8px">
-      <button class="iconbtn" id="eye" aria-label="Скрыть балансы"><i class="ti ti-eye"></i></button>
-      <button class="iconbtn" id="cur-btn" aria-label="Валюта"><i class="ti ti-arrows-exchange"></i></button>
-    </div>
+  <div class="ptitle"><div><span class="sm" id="h-month"></span>Обзор</div>
+    <div style="display:flex;gap:2px"><button class="hbtn" id="eye" aria-label="Скрыть суммы"></button><button class="hbtn" data-open="import" aria-label="Скрин из банка"><i class="ti ti-scan"></i></button></div></div>
+  <div class="box pace">
+    <div class="row2"><span class="lbl">Потрачено</span><span class="t2" id="h-blim"></span></div>
+    <div class="big num" id="h-spent"></div>
+    <div class="note" id="h-note"></div>
+    <svg id="h-chart" viewBox="0 0 330 110" preserveAspectRatio="none"></svg>
+    <div class="axis" id="h-axis"></div>
   </div>
-  <div class="hero">
-    <div class="lbl">Общий баланс</div>
-    <div class="total num" id="total"></div>
-    <div class="today" id="h-today"></div>
-    <div class="pills">
-      <div class="pill"><div class="pl"><i class="ti ti-arrow-up-right"></i> Расходы, <span class="mname"></span></div><div class="pv num" id="m-out"></div></div>
-      <div class="pill"><div class="pl"><i class="ti ti-arrow-down-left"></i> Доходы, <span class="mname"></span></div><div class="pv num" id="m-in"></div></div>
-    </div>
-    <div class="saved" id="h-saved"></div>
+  <div class="tiles">
+    <div class="box"><div class="lbl" id="t1-l"></div><div class="v num" id="t1-v"></div><div class="t2" id="t1-s"></div></div>
+    <div class="box"><div class="lbl" id="t2-l"></div><div class="v num" id="t2-v"></div><div class="t2" id="t2-s"></div></div>
   </div>
-  <div class="quick">
-    <button class="qa" data-quick="e"><span><i class="ti ti-arrow-up-right"></i></span>Расход</button>
-    <button class="qa" data-quick="i"><span><i class="ti ti-arrow-down-left"></i></span>Доход</button>
-    <button class="qa" data-quick="t"><span><i class="ti ti-arrows-left-right"></i></span>Перевод</button>
-    <button class="qa" data-open="import"><span><i class="ti ti-scan"></i></span>Скрин</button>
-    <button class="qa" data-quick="g"><span><i class="ti ti-pig-money"></i></span>Копилка</button>
-  </div>
-  <div class="head"><h2>Мои карты</h2><button class="link" id="all-cards">Все</button></div>
-  <div class="cards" id="cards"></div>
-  <div id="h-budget"></div>
   <div id="h-due"></div>
   <div class="head"><h2>Последние операции</h2><button class="link" data-goto="history">Все</button></div>
-  <div class="box" id="recent" style="padding:6px 16px"></div>
+  <div class="box" id="recent" style="padding:2px 16px"></div>
 </section>
 
 <!-- ============ История ============ -->
 <section class="page" id="p-history">
+  <div class="ptitle">Операции</div>
   <div class="search"><span class="muted"><i class="ti ti-search"></i></span><input id="q" placeholder="Поиск: категория, заметка, сумма" autocomplete="off"></div>
   <div class="chips scroll" id="h-kind" style="margin-bottom:6px"></div>
   <div class="chips scroll" id="h-card"></div>
@@ -443,12 +446,15 @@
 
 <!-- ============ Аналитика ============ -->
 <section class="page" id="p-stats">
+  <div class="ptitle">Аналитика</div>
   <div class="monthbar">
     <button id="m-prev" aria-label="Предыдущий месяц">‹</button>
     <div class="mt" id="m-title"></div>
     <button id="m-next" aria-label="Следующий месяц">›</button>
   </div>
-  <div class="seg" id="s-kind" style="margin-bottom:14px"><button data-k="e">Расходы</button><button data-k="i">Доходы</button></div>
+  <div class="seg" id="s-kind" style="margin-bottom:12px"><button data-k="b">Бюджеты</button><button data-k="e">Расходы</button><button data-k="i">Доходы</button></div>
+  <div id="s-bud"></div>
+  <div id="s-main">
   <div class="box">
     <div class="muted" style="font-size:13px" id="s-lbl"></div>
     <div class="bigstat num" id="s-total"></div>
@@ -461,24 +467,28 @@
   <div class="box" id="s-cats" style="padding:6px 16px"></div>
   <div class="head"><h2>По картам</h2></div>
   <div class="box" id="s-cards" style="padding:6px 16px"></div>
+  </div>
 </section>
 
 <!-- ============ Ещё ============ -->
 <section class="page" id="p-more">
-  <div class="head" style="margin-top:6px"><h2>Планирование</h2></div>
-  <div class="box menu" style="padding:4px 16px">
-    <button class="mi" data-open="budgets"><div class="ic"><i class="ti ti-target-arrow"></i></div><div class="mid"><div>Бюджеты</div><div class="t2">Лимиты трат на месяц</div></div><span class="ar">›</span></button>
-    <button class="mi" data-open="goals"><div class="ic"><i class="ti ti-pig-money"></i></div><div class="mid"><div>Копилки</div><div class="t2">Цели и накопления</div></div><span class="ar">›</span></button>
-    <button class="mi" data-open="recur"><div class="ic"><i class="ti ti-calendar-repeat"></i></div><div class="mid"><div>Регулярные платежи</div><div class="t2">Подписки, аренда, кредиты</div></div><span class="ar">›</span></button>
+  <div class="ptitle"><div><span class="sm">Всего на счетах</span><span class="num" id="acc-total"></span></div>
+    <button class="hbtn" data-open="currency" aria-label="Валюта"><i class="ti ti-arrows-exchange"></i></button></div>
+  <div class="box" id="cards" style="padding:2px 16px"></div>
+  <div class="head"><h2>Копилки</h2><button class="link" data-open="goals">Все</button></div>
+  <div class="box" id="acc-goals" style="padding:2px 16px"></div>
+  <div class="head"><h2>Планирование</h2></div>
+  <div class="box menu" style="padding:2px 16px">
+    <button class="mi" data-open="budgets"><div class="ic"><i class="ti ti-target-arrow"></i></div><div class="mid"><div>Бюджеты</div><div class="t2">Лимиты трат на месяц</div></div><span class="ar"><i class="ti ti-chevron-right"></i></span></button>
+    <button class="mi" data-open="recur"><div class="ic"><i class="ti ti-calendar-repeat"></i></div><div class="mid"><div>Регулярные платежи</div><div class="t2">Подписки, аренда, кредиты</div></div><span class="ar"><i class="ti ti-chevron-right"></i></span></button>
   </div>
   <div class="head"><h2>Настройки</h2></div>
-  <div class="box menu" style="padding:4px 16px">
-    <button class="mi" data-open="cards"><div class="ic"><i class="ti ti-credit-card"></i></div><div class="mid"><div>Карты и счета</div></div><span class="ar">›</span></button>
-    <button class="mi" data-open="currency"><div class="ic"><i class="ti ti-arrows-exchange"></i></div><div class="mid"><div>Валюта и курсы</div><div class="t2" id="more-cur"></div></div><span class="ar">›</span></button>
-    <button class="mi" data-open="hide"><div class="ic"><i class="ti ti-eye-off"></i></div><div class="mid"><div>Скрывать балансы</div><div class="t2">Когда рядом посторонние</div></div><span class="switch" id="hide-sw"></span></button>
-    <button class="mi" data-open="pin"><div class="ic"><i class="ti ti-lock"></i></div><div class="mid"><div>Код-пароль</div><div class="t2" id="pin-state"></div></div><span class="ar">›</span></button>
-    <button class="mi" data-open="aiset"><div class="ic"><i class="ti ti-sparkles"></i></div><div class="mid"><div>Распознавание скринов</div><div class="t2" id="ai-state"></div></div><span class="ar">›</span></button>
-    <button class="mi" data-open="cats"><div class="ic"><i class="ti ti-tags"></i></div><div class="mid"><div>Свои категории</div></div><span class="ar">›</span></button>
+  <div class="box menu" style="padding:2px 16px">
+    <button class="mi" data-open="currency"><div class="ic"><i class="ti ti-arrows-exchange"></i></div><div class="mid"><div>Валюта и курсы</div><div class="t2" id="more-cur"></div></div><span class="ar"><i class="ti ti-chevron-right"></i></span></button>
+    <button class="mi" data-open="hide"><div class="ic"><i class="ti ti-eye-off"></i></div><div class="mid"><div>Скрывать суммы</div><div class="t2">Когда рядом посторонние</div></div><span class="switch" id="hide-sw"></span></button>
+    <button class="mi" data-open="pin"><div class="ic"><i class="ti ti-lock"></i></div><div class="mid"><div>Код-пароль</div><div class="t2" id="pin-state"></div></div><span class="ar"><i class="ti ti-chevron-right"></i></span></button>
+    <button class="mi" data-open="aiset"><div class="ic"><i class="ti ti-scan"></i></div><div class="mid"><div>Распознавание скринов</div><div class="t2" id="ai-state"></div></div><span class="ar"><i class="ti ti-chevron-right"></i></span></button>
+    <button class="mi" data-open="cats"><div class="ic"><i class="ti ti-tags"></i></div><div class="mid"><div>Свои категории</div></div><span class="ar"><i class="ti ti-chevron-right"></i></span></button>
   </div>
   <div class="muted" style="font-size:12.5px;text-align:center;padding:4px 20px 10px">
     Данные хранятся в облаке Telegram и привязаны к вашему аккаунту. Они доступны только вам.
@@ -486,11 +496,11 @@
 </section>
 
 <nav>
-  <button data-page="home" class="on"><span class="ni"><i class="ti ti-home"></i></span>Главная</button>
-  <button data-page="history"><span class="ni"><i class="ti ti-receipt"></i></span>История</button>
+  <button data-page="home" class="on"><span class="ni"><i class="ti ti-layout-dashboard"></i></span>Обзор</button>
+  <button data-page="history"><span class="ni"><i class="ti ti-list"></i></span>Операции</button>
   <button class="plus" id="btn-add" aria-label="Добавить операцию"><span><i class="ti ti-plus"></i></span></button>
-  <button data-page="stats"><span class="ni"><i class="ti ti-chart-donut-3"></i></span>Аналитика</button>
-  <button data-page="more"><span class="ni"><i class="ti ti-dots-circle-horizontal"></i></span>Ещё</button>
+  <button data-page="stats"><span class="ni"><i class="ti ti-chart-pie"></i></span>Аналитика</button>
+  <button data-page="more"><span class="ni"><i class="ti ti-wallet"></i></span>Счета</button>
 </nav>
 
 <div class="lock" id="lock">
@@ -698,6 +708,7 @@ const ym = t => { const d = new Date(t * 1000); return d.getFullYear() * 12 + d.
 const nowYm = () => ym(Date.now() / 1000);
 const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const MONTHS_G = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const MONTHS_P = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
 const MONTHS_S = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
 const isoDay = d => { const x = new Date(d); x.setMinutes(x.getMinutes() - x.getTimezoneOffset()); return x.toISOString().slice(0, 10); };
 const dayDiff = iso => Math.round((new Date(iso + 'T00:00') - new Date(isoDay(new Date()) + 'T00:00')) / 864e5);
@@ -742,76 +753,89 @@ function opRow(o) {
 /* ================================================================ Главная */
 let page = 'home';
 function renderHome() {
-  const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
-  const h = new Date().getHours();
-  const greet = h < 5 ? 'Доброй ночи' : h < 12 ? 'Доброе утро' : h < 18 ? 'Добрый день' : 'Добрый вечер';
-  $('#hello').innerHTML = `${greet}<b>${esc(u && u.first_name ? u.first_name : 'Мои финансы')}</b>`;
+  const now = new Date(), m = nowYm(), d = now.getDate(), mo = now.getMonth();
+  const dim = new Date(now.getFullYear(), mo + 1, 0).getDate();
+  $('#h-month').textContent = MONTHS[mo];
   $('#eye').innerHTML = I(meta.hide ? 'eye-off' : 'eye');
-  countTo($('#total'), cards.reduce((s, c) => s + conv(balance(c.id), c.cur), 0));
-  const m = nowYm();
-  {
-    const now = new Date(), dim = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-    const spentToday = ops.reduce((s, o) => o.k === 'e' && dayDiff(isoDay(o.t * 1000)) === 0 ? s + opBase(o) : s, 0);
-    const el = $('#h-today'); el.classList.remove('over');
-    if (budgets['*']) {
-      const spentBefore = monthSum(m, 'e') - spentToday;
-      const perDay = Math.floor((budgets['*'] - spentBefore) / (dim - now.getDate() + 1) / 100) * 100;
-      const left = perDay - spentToday;
-      if (left >= 0) el.innerHTML = `${I('circle-check')} Можно потратить сегодня: ${money(left)}`;
-      else { el.classList.add('over'); el.innerHTML = `${I('alert-triangle')} Сегодня сверх нормы на ${money(-left)}`; }
-    } else el.innerHTML = spentToday ? `${I('calendar-event')} Сегодня потрачено ${money(spentToday)}` : `${I('sparkles')} Сегодня без трат`;
+  const spent = monthSum(m, 'e'), income = monthSum(m, 'i'), B = budgets['*'] || 0;
+  const spentToday = ops.reduce((s, o) => o.k === 'e' && dayDiff(isoDay(o.t * 1000)) === 0 ? s + opBase(o) : s, 0);
+  const cum = (mm, days) => {
+    const a = Array(days).fill(0);
+    ops.forEach(o => { if (o.k === 'e' && ym(o.t) === mm) a[Math.min(days, new Date(o.t * 1000).getDate()) - 1] += opBase(o); });
+    for (let i = 1; i < days; i++) a[i] += a[i - 1];
+    return a;
+  };
+  const curCum = cum(m, dim).slice(0, d);
+  const pdim = new Date(now.getFullYear(), mo, 0).getDate(), prevCum = cum(m - 1, pdim), prevTotal = prevCum[pdim - 1];
+
+  countTo($('#h-spent'), spent);
+  $('#h-blim').textContent = B ? 'бюджет ' + money(B) : '';
+  let ref = null, refLabel = '', note;
+  const dateTxt = `<span class="muted">на ${d} ${MONTHS_G[mo]}</span>`;
+  if (B) {
+    const diff = Math.round((B * d / dim - spent) / 100) * 100;
+    note = diff >= 0 ? `<span class="good">На ${money(diff)} меньше плана</span> ${dateTxt}` : `<span class="bad">На ${money(-diff)} больше плана</span> ${dateTxt}`;
+    ref = i => B * (i + 1) / dim; refLabel = 'план';
+  } else if (prevTotal) {
+    const diff = Math.round((prevCum[Math.min(d, pdim) - 1] - spent) / 100) * 100, pm = MONTHS_P[(mo + 11) % 12];
+    note = diff >= 0 ? `<span class="good">На ${money(diff)} меньше, чем к этому дню в ${pm}</span>` : `<span class="bad">На ${money(-diff)} больше, чем к этому дню в ${pm}</span>`;
+    ref = i => prevCum[Math.min(i, pdim - 1)]; refLabel = MONTHS[(mo + 11) % 12].toLowerCase();
+  } else note = `<button class="link" data-open="budgets">Задайте бюджет</button> <span class="muted">— увидите, укладываетесь ли в план</span>`;
+  $('#h-note').innerHTML = note;
+
+  // график темпа: накопленные траты против плана (или прошлого месяца)
+  const W = 330, H = 110, top = Math.max(spent * dim / Math.max(d, 1) * (d > 2 ? 1 : 0), spent, ref ? ref(dim - 1) : 0, 1) * 1.06;
+  const x = i => dim > 1 ? i / (dim - 1) * W : 0, y = v => H - 3 - v / top * (H - 10);
+  let g = `<line x1="0" x2="${W}" y1="${y(0)}" y2="${y(0)}" stroke="#26262b"/><line x1="0" x2="${W}" y1="${y(top / 2)}" y2="${y(top / 2)}" stroke="#1f1f23"/>`;
+  if (ref) {
+    const pts = Array.from({ length: dim }, (_, i) => `${x(i).toFixed(1)},${y(ref(i)).toFixed(1)}`).join(' ');
+    g += `<polyline points="0,${y(0)} ${pts}" fill="none" stroke="#5a5a63" stroke-width="1.4" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>`;
+    g += `<text x="${W - 4}" y="${Math.max(10, y(ref(dim - 1)) - 6)}" text-anchor="end" font-size="10" fill="#8a8a93">${refLabel}</text>`;
   }
-  $$('.mname').forEach(e => e.textContent = MONTHS[m % 12].toLowerCase());
-  $('#m-out').textContent = money(monthSum(m, 'e')); $('#m-in').textContent = money(monthSum(m, 'i'));
-  const inGoals = goals.reduce((s, g) => s + conv(goalSaved(g), g.cur), 0);
-  $('#h-saved').innerHTML = goals.length ? `${I('pig-money')} В копилках: ${hm(inGoals)}` : '';
-  $('#h-saved').style.display = goals.length ? '' : 'none';
+  if (d > 1 && d < dim && spent) {
+    g += `<line x1="${x(d - 1)}" y1="${y(spent)}" x2="${W}" y2="${y(spent / d * dim)}" stroke="#f2f2f4" stroke-opacity=".35" stroke-width="1.2" stroke-dasharray="1 4" vector-effect="non-scaling-stroke"/>`;
+  }
+  const cpts = curCum.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  g += `<polyline points="0,${y(0)} ${cpts}" fill="none" stroke="#f2f2f4" stroke-width="2.2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`;
+  g += `<circle cx="${x(d - 1)}" cy="${y(spent)}" r="4" fill="#f2f2f4"/>`;
+  $('#h-chart').innerHTML = g;
+  $('#h-axis').innerHTML = `<span>1</span><span>${Math.ceil(dim / 2)}</span><span>${dim}</span>`;
 
-  $('#cards').innerHTML = cards.map(c =>
-    `<button class="card" data-card="${c.id}" style="--c:${c.color}">
-      <div class="ct"><span class="cn">${esc(c.name)}</span><span class="cc">${c.cur}</span></div>
-      <div class="cb num">${hm(balance(c.id), c.cur)}</div></button>`).join('')
-    + `<button class="card add" data-new-card>＋ Карта</button>`;
-
-  // Бюджет
-  const spentBy = {}; let spent = 0;
-  ops.forEach(o => { if (o.k === 'e' && ym(o.t) === m) { const v = opBase(o); spentBy[o.c] = (spentBy[o.c] || 0) + v; spent += v; } });
-  const bkeys = Object.keys(budgets);
-  if (!bkeys.length) {
-    $('#h-budget').innerHTML = cards.length ? `<div class="box" style="margin-top:6px"><button class="cta" data-open="budgets">
-      <div class="ic"><i class="ti ti-target-arrow"></i></div><div style="flex:1"><div style="font-weight:600">Задайте бюджет на месяц</div>
-      <div class="muted" style="font-size:12.5px">Приложение подскажет, когда траты подходят к лимиту</div></div>
-      <span class="go">Задать</span></button></div>` : '';
+  // плитки
+  if (B) {
+    const perDay = Math.floor((B - (spent - spentToday)) / (dim - d + 1) / 100) * 100, left = perDay - spentToday;
+    $('#t1-l').textContent = 'Можно сегодня';
+    $('#t1-v').innerHTML = left >= 0 ? money(left) : `<span class="bad">−${money(-left)}</span>`;
+    $('#t1-s').textContent = left >= 0 ? `потрачено ${money(spentToday)}` : 'сверх дневной нормы';
   } else {
-    const rows = bkeys.map(k => ({ k, lim: budgets[k], sp: k === '*' ? spent : (spentBy[k] || 0) }))
-      .sort((a, b) => (a.k === '*' ? -1 : b.k === '*' ? 1 : b.sp / b.lim - a.sp / a.lim)).slice(0, 3);
-    $('#h-budget').innerHTML = `<div class="head"><h2>Бюджет на ${MONTHS[m % 12].toLowerCase()}</h2>
-      <button class="link" data-open="budgets">Все</button></div><div class="box" style="padding:6px 16px">${rows.map(budgetRow).join('')}</div>`;
+    $('#t1-l').textContent = 'Сегодня';
+    $('#t1-v').textContent = money(spentToday);
+    $('#t1-s').textContent = `в среднем ${money(Math.round(spent / d / 100) * 100)} в день`;
   }
+  $('#t2-l').textContent = 'Доходы';
+  $('#t2-v').innerHTML = money(income);
+  $('#t2-s').innerHTML = income ? `свободно <span class="${income - spent < 0 ? 'bad' : ''}">${money(income - spent)}</span>`
+    : `на счетах ${hm(cards.reduce((s, c) => s + conv(balance(c.id), c.cur), 0))}`;
 
-  // Платежи
   const soon = recur.filter(r => dayDiff(r.next) <= 7).sort((a, b) => a.next.localeCompare(b.next));
   $('#h-due').innerHTML = soon.length ? `<div class="head"><h2>Скоро платить</h2><button class="link" data-open="recur">Все</button></div>
-    <div class="box" style="padding:4px 16px">${soon.map(dueRow).join('')}</div>` : '';
-
+    <div class="box" style="padding:2px 16px">${soon.map(dueRow).join('')}</div>` : '';
   const recent = ops.slice(-6).reverse();
   $('#recent').innerHTML = recent.length ? recent.map(opRow).join('')
-    : `<div class="empty">${cards.length ? 'Здесь появятся ваши траты.<br>Нажмите «+», чтобы добавить первую.' : 'Начните с добавления карты'}</div>`;
+    : `<div class="empty">${cards.length ? 'Здесь появятся ваши операции. Нажмите «+», чтобы добавить первую.'
+       : 'Начните с добавления счёта: <button class="link" data-new-card style="color:var(--text);text-decoration:underline">добавить</button>'}</div>`;
 }
 
 function budgetRow(b) {
   const pct = b.lim ? b.sp / b.lim : 0;
-  const ci = b.k === '*' ? { e: I('wallet'), col: '#6366f1' } : catInfo(b.k, 'e');
+  const ci = b.k === '*' ? { e: I('wallet'), col: '#c9c9cf' } : catInfo(b.k, 'e');
   const cls = pct >= 1 ? 'over' : pct >= .8 ? 'warn' : '';
-  const day = new Date(), dim = new Date(day.getFullYear(), day.getMonth() + 1, 0).getDate();
-  const left = b.lim - b.sp, perDay = left > 0 ? Math.floor(left / (dim - day.getDate() + 1) / 100) * 100 : 0;
-  const note = pct >= 1 ? `<span class="note-over"><i class="ti ti-alert-triangle"></i> Превышен на ${money(-left)}</span>`
-    : `Осталось ${money(left)}${b.k === '*' && perDay ? ` · ~${money(perDay)} в день` : ''}`;
+  const tag = pct >= 1 ? '<span class="tag bad">превышен</span>' : pct >= .8 ? `<span class="tag warn">${Math.round(pct * 100)}%</span>` : '';
+  const sub = pct >= 1 ? `<span class="bad">на ${money(b.sp - b.lim)} больше лимита</span>` : `осталось ${money(b.lim - b.sp)}`;
   return `<div class="brow"><div class="r1"><div class="ic" style="${tint(ci.col)}">${ci.e}</div>
-    <div class="nm">${b.k === '*' ? 'Все расходы' : esc(b.k)}</div>
-    <div class="vl num">${fmtNum(b.sp)} / ${money(b.lim)}</div></div>
-    <div class="track"><div class="fill ${cls}" style="width:${Math.min(100, pct * 100)}%"></div></div>
-    <div class="muted" style="font-size:12.5px;margin-top:6px">${note}</div></div>`;
+    <div class="nm"><div class="t1">${b.k === '*' ? 'Все расходы' : esc(b.k)}${tag}</div><div class="t2">${sub}</div></div>
+    <div class="vl num">${fmtNum(b.sp)} <span class="muted" style="font-weight:400">/ ${fmtNum(b.lim)}</span></div></div>
+    <div class="track"><div class="fill ${cls}" style="width:${Math.min(100, pct * 100)}%;${cls || b.k === '*' ? '' : 'background:' + ci.col}"></div></div></div>`;
 }
 
 function dueRow(r) {
@@ -857,12 +881,15 @@ function renderHistory() {
 }
 
 /* ================================================================ Аналитика */
-let sMonth = null, sKind = 'e';
+let sMonth = null, sKind = 'b';
 function renderStats() {
   if (sMonth === null) sMonth = nowYm();
   const y = Math.floor(sMonth / 12), mo = sMonth % 12;
   $('#m-title').textContent = MONTHS[mo] + ' ' + y;
   $$('#s-kind button').forEach(b => b.classList.toggle('on', b.dataset.k === sKind));
+  $('#s-bud').style.display = sKind === 'b' ? '' : 'none';
+  $('#s-main').style.display = sKind === 'b' ? 'none' : '';
+  if (sKind === 'b') return renderBudgetView(sMonth);
   const list = ops.filter(o => o.k === sKind && ym(o.t) === sMonth);
   const total = list.reduce((s, o) => s + opBase(o), 0);
   const prev = monthSum(sMonth - 1, sKind);
@@ -932,7 +959,53 @@ function renderStats() {
 }
 
 /* ================================================================ Ещё */
+function renderBudgetView(mm) {
+  const spent = {}; let all = 0;
+  ops.forEach(o => { if (o.k === 'e' && ym(o.t) === mm) { const v = opBase(o); spent[o.c] = (spent[o.c] || 0) + v; all += v; } });
+  const B = budgets['*'], isCur = mm === nowYm(), now = new Date();
+  const dim = new Date(Math.floor(mm / 12), mm % 12 + 1, 0).getDate();
+  let html = '';
+  if (!Object.keys(budgets).length) {
+    html = `<div class="box" style="padding:20px 16px;text-align:center"><div class="ic" style="margin:0 auto 10px;width:46px;height:46px;font-size:24px">${I('target-arrow')}</div>
+      <div style="font-weight:600;margin-bottom:4px">Бюджеты не заданы</div>
+      <div class="t2" style="margin-bottom:14px">Задайте лимит на месяц — общий или по категориям, — и здесь будет видно, сколько осталось</div>
+      <button class="btn" data-open="budgets" style="width:auto;padding:11px 20px">Задать бюджет</button></div>`;
+  } else {
+    if (B) {
+      const pct = all / B, cls = pct >= 1 ? 'over' : pct >= .8 ? 'warn' : '';
+      html += `<div class="box"><div class="row2"><span style="font-weight:600">Всего</span><span class="num"><b>${fmtNum(all)}</b> <span class="muted">/ ${money(B)}</span></span></div>
+        <div class="track big"><div class="fill ${cls}" style="width:${Math.min(100, pct * 100)}%"></div></div>
+        <div class="row2 t2"><span>${Math.round(pct * 100)}% бюджета</span><span>${isCur ? 'прошло ' + Math.round(now.getDate() / dim * 100) + '% месяца' : ''}</span></div></div>`;
+    }
+    const cats = Object.keys(budgets).filter(k => k !== '*').map(k => ({ k, lim: budgets[k], sp: spent[k] || 0 }))
+      .sort((a, b) => b.sp / b.lim - a.sp / a.lim);
+    if (cats.length) html += `<div class="box" style="padding:4px 16px">${cats.map(budgetRow).join('')}</div>`;
+    const free = Object.keys(spent).filter(k => !budgets[k]);
+    if (free.length) {
+      const sum = free.reduce((s, k) => s + spent[k], 0);
+      html += `<div class="box" style="display:flex;gap:12px;align-items:center"><div class="ic">${I('info-circle')}</div>
+        <div class="t2" style="font-size:13px">Без лимита: ${free.slice(0, 4).map(esc).join(', ')}${free.length > 4 ? '…' : ''} — <span class="num" style="color:var(--text);white-space:nowrap">${money(sum)}</span></div></div>`;
+    }
+    html += `<button class="btn sec" data-open="budgets" style="margin-top:2px">${I('adjustments-horizontal')} Настроить лимиты</button>`;
+  }
+  $('#s-bud').innerHTML = html;
+}
+
 function renderMore() {
+  const total = cards.reduce((s, c) => s + conv(balance(c.id), c.cur), 0);
+  $('#acc-total').textContent = hm(total);
+  $('#cards').innerHTML = cards.map(c => `<button class="op" data-card="${c.id}">
+      <div class="ic" style="${tint(c.color)}">${I('wallet')}</div>
+      <div class="mid"><div class="t1">${esc(c.name)}</div><div class="t2">${CURS[c.cur][1]}${c.cur !== meta.base ? ' · ≈ ' + hm(conv(balance(c.id), c.cur)) : ''}</div></div>
+      <div class="amt num">${hm(balance(c.id), c.cur)}</div></button>`).join('')
+    + `<button class="op acc-add" data-new-card><div class="ic">${I('plus')}</div><div class="mid">Добавить счёт</div></button>`;
+  $('#acc-goals').innerHTML = goals.length ? goals.map(g => {
+      const sv = goalSaved(g), p = g.target ? Math.min(100, Math.round(sv * 100 / g.target)) : 0;
+      return `<button class="op" data-open="goals" style="flex-wrap:wrap"><div class="ic" style="${tint(g.color)}">${g.emoji}</div>
+        <div class="mid"><div class="t1">${esc(g.name)}</div><div class="t2 num">${hm(sv, g.cur)}${g.target ? ' из ' + money(g.target, false, g.cur) : ''}</div></div>
+        ${g.target ? `<div class="amt num">${p}%</div><div class="track" style="width:100%;margin-top:8px"><div class="fill" style="width:${p}%;background:${g.color}"></div></div>` : ''}</button>`;
+    }).join('') : `<button class="op acc-add" data-open="goals"><div class="ic">${I('pig-money')}</div><div class="mid">Создать копилку</div></button>`;
+
   $('#ai-state').textContent = meta.ai ? 'Подключено' : 'Не настроено';
   $('#pin-state').textContent = 'Сменить код' + (bioReady ? ' · ' + bioName() : '');
   $('#more-cur').textContent = 'Основная: ' + sym(meta.base) + ' ' + CURS[meta.base][1];
@@ -1811,10 +1884,7 @@ document.addEventListener('click', e => {
   const hc = t.closest('[data-hcard]'); if (hc) { hCard = +hc.dataset.hcard; renderHistory(); return; }
 });
 $('#btn-add').onclick = () => openAdd('e');
-$('#all-cards').onclick = openCardsList;
-$('#cur-btn').onclick = openCurrency;
 $('#eye').onclick = OPEN.hide;
-$('#total').onclick = OPEN.hide;
 $('#backdrop').onclick = closeAll;
 $('#q').oninput = () => renderHistory();
 $('#m-prev').onclick = () => { sMonth--; renderStats(); };
